@@ -1,4 +1,8 @@
-﻿using SlackApi.App.Settings;
+﻿using Microsoft.AspNetCore.Server.Kestrel.Core;
+using SlackApi.App.Settings;
+using SlackApi.App_Start;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace SlackApi
 {
@@ -17,9 +21,24 @@ namespace SlackApi
         public void ConfigureServices(IServiceCollection services)
         {
             var applicationSettings = GetApplicationSettings();
-            var connectionString = GetConnectionStrings();
+            var connectionStrings = GetConnectionStrings();
 
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
 
+            services
+                .Configure<KestrelServerOptions>(options =>
+                {
+                    options.AllowSynchronousIO = true;
+                })
+                .AddApplicationInsightsTelemetry()
+                .ConfigureIdentityAndSecurity(applicationSettings)
+                .InitCache(applicationSettings, connectionStrings)
+                .RegisterDependencies(applicationSettings, connectionStrings);
         }
 
         #region private methods
