@@ -201,6 +201,31 @@ namespace SlackApi.Repository.TableStorage
             }
         }
 
+        public async Task<List<T>> GetAllByQuery<T>(string tableName, string query)
+            where T : class, ITableEntity, new()
+        {
+            var table = _client.GetTableClient(tableName);
+
+            try
+            {
+                var result = table.QueryAsync<T>(query);
+
+                List<T> results = new();
+
+                await foreach (var page in result.AsPages())
+                {
+                    results.AddRange(page.Values);
+                }
+
+                return results;
+            }
+            catch (TableTransactionFailedException)
+            {
+                await table.CreateIfNotExistsAsync();
+                return await GetAllByQuery<T>(tableName, query);
+            }
+        }
+
         public async Task<List<T>> GetAllByQuery<T>(string tableName,
             Expression<Func<T, bool>> entityQuery) where T : class, ITableEntity, new()
         {
