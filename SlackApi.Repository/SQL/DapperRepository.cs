@@ -24,10 +24,6 @@ namespace SlackApi.Repository.SQL
 
         public DbConnection GetDbConnection()
         {
-            if (ConfigExtensions.GetCurrentEnvironment() == EnvironmentType.Development)
-                return new StackExchange.Profiling.Data.ProfiledDbConnection(
-                    new SqlConnection(_connectionString), MiniProfiler.Current);
-
             return new SqlConnection(_connectionString);
         }
 
@@ -61,7 +57,7 @@ namespace SlackApi.Repository.SQL
             return conn.Query<T>(query, param: queryParameters);
         }
 
-        public async Task<IEnumerable<T>> QueryAsync<T>(string query) where T : class
+        public async Task<IEnumerable<T>> QueryAsync<T>(string query)
         {
             using var conn = GetDbConnection();
             return await conn.QueryAsync<T>(query);

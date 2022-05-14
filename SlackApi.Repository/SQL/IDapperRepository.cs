@@ -13,7 +13,7 @@ namespace SlackApi.Repository.SQL
         Task<T> GetByIdAsync<T>(int id) where T : class;
         IEnumerable<T> Query<T>(string query) where T : class;
         IEnumerable<T> Query<T>(string query, object queryParameters) where T : class;
-        Task<IEnumerable<T>> QueryAsync<T>(string query) where T : class;
+        Task<IEnumerable<T>> QueryAsync<T>(string query);
         Task<IEnumerable<T>> QueryAsync<T>(string query, object queryParameters);
         IEnumerable<T> ExecuteStoredProcedure<T>(string storedProcedureName, object queryParameters);
         Task<IEnumerable<T>> ExecuteStoredProcedureAsync<T>(string storedProcedureName, object queryParameters);

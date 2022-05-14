@@ -38,7 +38,9 @@ namespace SlackApi
                 .AddApplicationInsightsTelemetry()
                 .ConfigureIdentityAndSecurity(applicationSettings)
                 .InitCache(applicationSettings, connectionStrings)
-                .RegisterDependencies(applicationSettings, connectionStrings);
+                .InitDatabases(applicationSettings, connectionStrings)
+                .RegisterDependencies(applicationSettings, connectionStrings)
+                .AddAntiforgery(options => options.SuppressXFrameOptionsHeader = true);
         }
 
         #region private methods

@@ -119,7 +119,7 @@ namespace SlackApi.Repository.TableStorage
             {
                 return await table.UpsertEntityAsync(tableEntity);
             }
-            catch (TableTransactionFailedException)
+            catch (Azure.RequestFailedException)
             {
                 // Create the table if it doesn't exist.
                 await table.CreateIfNotExistsAsync();
@@ -143,7 +143,7 @@ namespace SlackApi.Repository.TableStorage
 
                 return tableEntities;
             }
-            catch (TableTransactionFailedException)
+            catch (Azure.RequestFailedException)
             {
                 await table.CreateIfNotExistsAsync();
                 return await UpsertCollectionAsync(tableEntities, tableName);
@@ -168,7 +168,7 @@ namespace SlackApi.Repository.TableStorage
                 
                 return results;
             }
-            catch (TableTransactionFailedException)
+            catch (Azure.RequestFailedException)
             {
                 await table.CreateIfNotExistsAsync();
                 return await GetAllAsync<T>(tableName);
@@ -194,7 +194,7 @@ namespace SlackApi.Repository.TableStorage
 
                 return results;
             }
-            catch (TableTransactionFailedException)
+            catch (Azure.RequestFailedException)
             {
                 await table.CreateIfNotExistsAsync();
                 return await GetAllByPartitionKeyAsync<T>(tableName, partitionKey);
@@ -219,7 +219,7 @@ namespace SlackApi.Repository.TableStorage
 
                 return results;
             }
-            catch (TableTransactionFailedException)
+            catch (Azure.RequestFailedException)
             {
                 await table.CreateIfNotExistsAsync();
                 return await GetAllByQuery<T>(tableName, query);
@@ -244,7 +244,7 @@ namespace SlackApi.Repository.TableStorage
 
                 return results;
             }
-            catch (TableTransactionFailedException)
+            catch (Azure.RequestFailedException)
             {
                 await table.CreateIfNotExistsAsync();
                 return await GetAllByQuery(tableName, entityQuery);
@@ -276,14 +276,14 @@ namespace SlackApi.Repository.TableStorage
 
     public class PagedTableStorageRequest
     {
-        public string ContinuationToken { get; set; }
+        public string? ContinuationToken { get; set; }
         public int Take { get; set; } = 25;
     }
 
     public class PagedTableStorageResponse<T>
     {
-        public string ContinuationToken { get; set; }
-        public List<T> Data { get; set; }
+        public string? ContinuationToken { get; set; }
+        public List<T>? Data { get; set; }
     }
 
     /// <summary>

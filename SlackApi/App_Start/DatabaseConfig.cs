@@ -13,7 +13,9 @@ namespace SlackApi.App_Start
             ConnectionStrings connectionStrings
         )
         {
-            if (connectionStrings == null || applicationSettings == null)
+            if (connectionStrings?.SqlConnection == null 
+                || connectionStrings?.TableStorage == null
+                || applicationSettings == null)
                 throw new NotImplementedException("Check the ConnectionStrings config is present and " +
                                                   "correct in 'appsettings.json'");
 
