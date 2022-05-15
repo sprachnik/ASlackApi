@@ -1,4 +1,5 @@
-﻿using SlackApi.App.Settings;
+﻿using SlackApi.App.Services;
+using SlackApi.App.Settings;
 
 namespace SlackApi.App_Start
 {
@@ -9,6 +10,8 @@ namespace SlackApi.App_Start
             ApplicationSettings applicationSettings,
             ConnectionStrings connectionStrings)
         {
+            services.AddTransient<ISlackInteractiveEventService, SlackInteractiveEventService>();
+            services.AddTransient<ISlackAuthService, SlackAuthService>();
 
             return services;
         }

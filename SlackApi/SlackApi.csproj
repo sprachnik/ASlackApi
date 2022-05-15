@@ -21,7 +21,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SlackApi.App\SlackApi.App.csproj" />
+    <ProjectReference Include="..\SlackApi.Domain\SlackApi.Domain.csproj" />
     <ProjectReference Include="..\SlackApi.Repository\SlackApi.Repository.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Filters\ActionFilters\" />
   </ItemGroup>
 
 </Project>

@@ -1,13 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SlackApi.App.Settings
+﻿namespace SlackApi.App.Settings
 {
     public class ApplicationSettings
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
+
+        public SlackSettings? SlackSettings { get; set; }
+    }
+
+    public class SlackSettings
+    {
+        public string? DefaultSlackWebookUri { get; set; }
+        public string? OutgoingOAuthToken { get; set; }
+        public string? IncomingToken { get; set; }
+        public string? SigningSecret { get; set; }
+        public string DefaultVersionNo { get; set; } = "v0";
     }
 }

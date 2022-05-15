@@ -1,4 +1,5 @@
 using SlackApi;
+using SlackApi.ErrorHandling;
 
 // https://andrewlock.net/exploring-dotnet-6-part-12-upgrading-a-dotnet-5-startup-based-app-to-dotnet-6/
 
@@ -28,4 +29,5 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+app.UseMiddleware<ExceptionHandler>();
 app.Run();
