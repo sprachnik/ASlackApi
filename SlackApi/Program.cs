@@ -2,11 +2,9 @@ using SlackApi;
 using SlackApi.ErrorHandling;
 
 // https://andrewlock.net/exploring-dotnet-6-part-12-upgrading-a-dotnet-5-startup-based-app-to-dotnet-6/
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -26,8 +24,23 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 app.UseAuthorization();
+
 app.MapControllers();
-app.UseMiddleware<ExceptionHandler>();
+
+app.UseMiddleware<ExceptionHandler>()
+    .Use(async (context, next) =>
+    {
+        context.Response.Headers.Add("X-Frame-Options", "DENY");
+        context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
+        context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+        context.Response.Headers.Add("Referrer-Policy", "no-referrer");
+        context.Response.Headers.Add("X-Permitted-Cross-Domain-Policies", "none");
+        context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'");
+        context.Response.Headers.Remove("X-Powered-By");
+        context.Response.Headers.Add("Permissions-Policy", "fullscreen=(), geolocation=()");
+        context.Request.EnableBuffering(bufferThreshold: 1024 * 10000, bufferLimit: 1024 * 20000);
+        await next();
+    });
+
 app.Run();

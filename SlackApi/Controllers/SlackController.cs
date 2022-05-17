@@ -10,10 +10,13 @@ namespace SlackApi.Controllers
     public class SlackController : ControllerBase
     {
         private readonly ISlackInteractiveEventService _slackInteractiveEventService;
+        private readonly ILogger<SlackController> _logger;
 
-        public SlackController(ISlackInteractiveEventService slackInteractiveEventService)
+        public SlackController(ISlackInteractiveEventService slackInteractiveEventService,
+            ILogger<SlackController> logger)
         {
             _slackInteractiveEventService = slackInteractiveEventService;
+            _logger = logger;
         }
 
         [Authorize(Policy = "ValidateSlackRequest")]
@@ -23,9 +26,22 @@ namespace SlackApi.Controllers
            [FromForm] string payload)
         {
             var decodedPayload = HttpUtility.UrlDecode(payload);
-            var interactiveEvent = JsonSerializer.Deserialize<SlackInteractiveEvent>(decodedPayload);
-            var response = await _slackInteractiveEventService.ProcessInteractiveEvent(interactiveEvent);
-            return response;
+            var interactiveEvent = JsonSerializer.Deserialize<SlackInteractionPayload>(decodedPayload);
+            await _slackInteractiveEventService.ProcessInteractiveEvent(interactiveEvent);
+            Console.WriteLine(decodedPayload);
+            return new SlackResponse();
+        }
+
+        [Authorize(Policy = "ValidateSlackRequest")]
+        [HttpPost("options-events")]
+        [Consumes("application/x-www-form-urlencoded")]
+        public async Task<ActionResult<SlackResponse>> ProcessOptionsEvent(
+           [FromForm] string payload)
+        {
+            var decodedPayload = HttpUtility.UrlDecode(payload);
+            Console.WriteLine(decodedPayload);
+            
+            return new SlackResponse();
         }
     }
 }

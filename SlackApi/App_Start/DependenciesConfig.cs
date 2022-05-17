@@ -10,8 +10,15 @@ namespace SlackApi.App_Start
             ApplicationSettings applicationSettings,
             ConnectionStrings connectionStrings)
         {
+            // Transient
             services.AddTransient<ISlackInteractiveEventService, SlackInteractiveEventService>();
             services.AddTransient<ISlackAuthService, SlackAuthService>();
+
+            // Scopes
+
+            // Singleton
+            services.AddSingleton(applicationSettings);
+            services.AddSingleton(connectionStrings);
 
             return services;
         }

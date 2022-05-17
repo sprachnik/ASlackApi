@@ -10,8 +10,8 @@ namespace SlackApi.Filters.Handlers
     public class ValidateSlackRequestHandler : AuthorizationHandler<ValidateSlackRequestHandlerRequirement>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ApplicationSettings _applicationSettings;
-        private readonly ILogger<ValidateSlackRequestHandler> _logger;
+        private readonly ApplicationSettings? _applicationSettings;
+        private readonly ILogger<ValidateSlackRequestHandler>? _logger;
 
         public ValidateSlackRequestHandler(IHttpContextAccessor httpContextAccessor,
             ApplicationSettings applicationSettings,
@@ -32,7 +32,7 @@ namespace SlackApi.Filters.Handlers
             }
             catch (Exception e)
             {
-                _logger.LogError(e.Message, e);
+                _logger?.LogError(e.Message, e);
             }
 
             return Task.CompletedTask;
@@ -44,6 +44,8 @@ namespace SlackApi.Filters.Handlers
 
             if (request is null)
                 throw new AuthenticationException("Unable to authenticate request!");
+
+            request.EnableBuffering();
 
             var isSignatureFound = request.Headers.TryGetValue("X-Slack-Signature", out var signatureHeaders);
 

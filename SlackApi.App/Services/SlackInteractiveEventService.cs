@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlackApi.Domain.DTOs;
-using System.Text.Json;
 
 namespace SlackApi.App.Services
 {
@@ -13,25 +12,14 @@ namespace SlackApi.App.Services
             _logger = logger;
         }
 
-        public async Task<SlackResponse> ProcessInteractiveEvent(SlackInteractiveEvent? interactiveEvent)
+        public async Task<SlackResponse> ProcessInteractiveEvent(SlackInteractionPayload? interactiveEvent)
         {
             var response = new SlackResponse();
 
-            if (interactiveEvent?.BlockActions is null)
+            if (interactiveEvent is null)
                 throw new ArgumentNullException(nameof(interactiveEvent));
 
-            
-            foreach (var action in interactiveEvent.BlockActions)
-            {
-                try
-                {
-                    _logger.LogInformation(JsonSerializer.Serialize(action));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex.Message, ex);
-                }
-            }
+            Console.WriteLine(interactiveEvent.Type);
            
             return response;
         }
@@ -39,6 +27,6 @@ namespace SlackApi.App.Services
 
     public interface ISlackInteractiveEventService
     {
-        Task<SlackResponse> ProcessInteractiveEvent(SlackInteractiveEvent? interactiveEvent);
+        Task<SlackResponse> ProcessInteractiveEvent(SlackInteractionPayload? interactiveEvent);
     }
 }
