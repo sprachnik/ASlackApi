@@ -2,6 +2,16 @@
 
 namespace SlackApi.Domain.DTOs
 {
+    public class SlackViewRequest
+    {
+        [JsonPropertyName("trigger_id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? TriggerId { get; set; }
+
+        [JsonPropertyName("view")]
+        public SlackViewPayload? View { get; set; }
+    }
+
     /// <summary>
     /// https://api.slack.com/reference/surfaces/views
     /// </summary>
@@ -28,10 +38,6 @@ namespace SlackApi.Domain.DTOs
         [JsonPropertyName("callback_id")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? CallbackId { get; set; }
-
-        [JsonPropertyName("trigger_id")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? TriggerId { get; set; }
     }
 
     public class Close

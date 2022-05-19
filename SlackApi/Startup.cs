@@ -40,6 +40,7 @@ namespace SlackApi
                 .InitCache(applicationSettings, connectionStrings)
                 .InitDatabases(applicationSettings, connectionStrings)
                 .RegisterDependencies(applicationSettings, connectionStrings)
+                .ConfigureHttpClient()
                 .RegisterAuthenticationFilters()
                 .AddAntiforgery(options => options.SuppressXFrameOptionsHeader = true);
         }

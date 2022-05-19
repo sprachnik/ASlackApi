@@ -19,6 +19,7 @@ namespace SlackApi.Domain.DTOs
         public Label? Label { get; set; }
 
         [JsonPropertyName("text")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Text? Text { get; set; }
 
         [JsonPropertyName("elements")]
@@ -41,87 +42,98 @@ namespace SlackApi.Domain.DTOs
     public class Text
     {
         [JsonPropertyName("type")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Type { get; set; }
 
         [JsonPropertyName("text")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? BlockText { get; set; }
 
         [JsonPropertyName("verbatim")]
-        public bool Verbatim { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public bool? Verbatim { get; set; }
 
         [JsonPropertyName("emoji")]
-        public bool Emoji { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public bool? Emoji { get; set; }
     }
 
     public class Element
     {
         [JsonPropertyName("type")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Type { get; set; }
 
         [JsonPropertyName("action_id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? ActionId { get; set; }
 
         [JsonPropertyName("text")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Text? Text { get; set; }
 
         [JsonPropertyName("placeholder")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Placeholder? Placeholder { get; set; }
 
         [JsonPropertyName("multiline")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public bool? Multiline { get; set; }
     }
 
     public class Placeholder
     {
         [JsonPropertyName("type")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Type { get; set; }
 
         [JsonPropertyName("text")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Text { get; set; }
     }
 
     public class Field
     {
         [JsonPropertyName("type")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Type { get; set; }
 
         [JsonPropertyName("text")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Text { get; set; }
     }
 
     public class Accessory
     {
         [JsonPropertyName("type")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Type { get; set; }
 
         [JsonPropertyName("text")]
-        public ViewText? Text { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public Text? Text { get; set; }
 
         [JsonPropertyName("action_id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? ActionId { get; set; }
 
         [JsonPropertyName("value")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Value { get; set; }
 
         [JsonPropertyName("style")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Style { get; set; }
     }
 
     public class Label
     {
         [JsonPropertyName("type")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Type { get; set; }
 
         [JsonPropertyName("text")]
-        public string? Text { get; set; }
-    }
-
-    public class ViewText
-    {
-        [JsonPropertyName("type")]
-        public string? Type { get; set; }
-
-        [JsonPropertyName("text")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Text { get; set; }
     }
 }

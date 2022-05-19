@@ -15,7 +15,7 @@ namespace SlackApi.App.Services
         public async Task<SlackResponse> ProcessShortCut(SlackInteractionPayload payload)
             => payload.CallbackId switch
             {
-                ShortCutCallback.SendABadge => await _badgeService.SendABadge(),
+                ShortCutCallback.SendABadge => await _badgeService.SendABadge(payload),
                 _ => throw new NotImplementedException($"{payload.CallbackId} is not supported!")
             };
         

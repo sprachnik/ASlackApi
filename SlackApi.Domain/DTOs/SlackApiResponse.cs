@@ -14,7 +14,7 @@ namespace SlackApi.Domain.DTOs
         public ResponseMetadata? ResponseMetadata { get; set; }
 
         [JsonPropertyName("view")]
-        public View? View { get; set; }
+        public SlackViewPayload? View { get; set; }
     }
 
     public class ResponseMetadata
