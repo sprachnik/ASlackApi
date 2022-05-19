@@ -2,6 +2,7 @@
 
 namespace SlackApi.Domain.DTOs
 {
+
     public class SlackInteractionPayload
     {
         [JsonPropertyName("type")]
@@ -24,6 +25,9 @@ namespace SlackApi.Domain.DTOs
 
         [JsonPropertyName("trigger_id")]
         public string? TriggerId { get; set; }
+
+        [JsonPropertyName("callback_id")]
+        public string? CallbackId { get; set; }
 
         [JsonPropertyName("channel")]
         public Channel? Channel { get; set; }
@@ -113,7 +117,7 @@ namespace SlackApi.Domain.DTOs
         public string? BlockId { get; set; }
 
         [JsonPropertyName("text")]
-        public BlockText? Text { get; set; }
+        public Text? Text { get; set; }
 
         [JsonPropertyName("value")]
         public string? Value { get; set; }
@@ -125,20 +129,6 @@ namespace SlackApi.Domain.DTOs
         public string? ActionTs { get; set; }
     }
 
-    public class Block
-    {
-        [JsonPropertyName("type")]
-        public string? Type { get; set; }
-
-        [JsonPropertyName("block_id")]
-        public string? BlockId { get; set; }
-
-        [JsonPropertyName("text")]
-        public BlockText? Text { get; set; }
-
-        [JsonPropertyName("elements")]
-        public List<Element>? Elements { get; set; }
-    }
 
     public class Channel
     {
@@ -173,18 +163,6 @@ namespace SlackApi.Domain.DTOs
         public string? ViewId { get; set; }
     }
 
-    public class Element
-    {
-        [JsonPropertyName("type")]
-        public string? Type { get; set; }
-
-        [JsonPropertyName("action_id")]
-        public string? ActionId { get; set; }
-
-        [JsonPropertyName("text")]
-        public BlockText? Text { get; set; }
-    }
-
     public class Message
     {
         [JsonPropertyName("bot_id")]
@@ -212,20 +190,6 @@ namespace SlackApi.Domain.DTOs
         public string? Domain { get; set; }
     }
 
-    public class BlockText
-    {
-        [JsonPropertyName("type")]
-        public string? Type { get; set; }
-
-        [JsonPropertyName("text")]
-        public string? Text { get; set; }
-
-        [JsonPropertyName("verbatim")]
-        public bool Verbatim { get; set; }
-
-        [JsonPropertyName("emoji")]
-        public bool Emoji { get; set; }
-    }
 
     public class User
     {

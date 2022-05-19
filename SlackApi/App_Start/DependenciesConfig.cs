@@ -13,6 +13,8 @@ namespace SlackApi.App_Start
             // Transient
             services.AddTransient<ISlackInteractiveEventService, SlackInteractiveEventService>();
             services.AddTransient<ISlackAuthService, SlackAuthService>();
+            services.AddTransient<IShortCutService, ShortcutService>();
+            services.AddTransient<IBadgeService, BadgeService>();
 
             // Scopes
 
