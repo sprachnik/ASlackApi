@@ -34,28 +34,26 @@ namespace SlackApi.App.Services
             if (string.IsNullOrWhiteSpace(triggerId))
                 throw new ArgumentNullException(nameof(triggerId));
 
-            var viewBuilder = new ViewBuilder(SlackResponsePayloadType.Modal, callbackId, triggerId)
-                .AddTitle("Send a badge");
-
-            viewBuilder.AddBlock(BlockType.Section, 
-                blockId: "intro", 
-                new Text 
-                { 
-                    Type = TextType.Markdown, 
-                    BlockText = "*Welcome* to ~my~ Block Kit _modal_!" 
-                },
-                new Accessory
-                {
-                    Type = AccessoryType.Button,
-                    Text = new Text
-                    {
-                        Type = TextType.PlainText,
-                        BlockText = "A Button!"
+            return (SlackViewRequest)new ViewBuilder(SlackResponsePayloadType.Modal, callbackId, triggerId)
+                .AddTitle("Send a badge")
+                .AddBlock(BlockType.Section, 
+                    blockId: "intro", 
+                    new Text 
+                    { 
+                        Type = TextType.Markdown, 
+                        BlockText = "*Welcome* to ~my~ Block Kit _modal_!" 
                     },
-                    ActionId = "button-identifier"
-                });
-
-            return viewBuilder.ConstructRequest();
+                    new Accessory
+                    {
+                        Type = AccessoryType.Button,
+                        Text = new Text
+                        {
+                            Type = TextType.PlainText,
+                            BlockText = "A Button!"
+                        },
+                        ActionId = "button-identifier"
+                    })
+                .ConstructRequest();
         }
 
         #endregion

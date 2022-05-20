@@ -2,31 +2,31 @@
 
 namespace SlackApi.App.Builders
 {
-    public class ViewBuilder : BlockKitBuilder
+    public class ViewBuilder : BlockKitBuilder, IBlockKitBuilder
     {
-        private readonly SlackViewPayload View;
-        private readonly SlackViewRequest Request;
+        private readonly SlackViewPayload _view;
+        private readonly SlackViewRequest _request;
 
         public ViewBuilder(string type, string? callbackId = null, string? triggerId = null)
         {
-            View = new SlackViewPayload
+            _view = new SlackViewPayload
             {
                 Type = type,
                 CallbackId = callbackId
             };
-            Request = new SlackViewRequest 
+            _request = new SlackViewRequest 
             { 
                 TriggerId = triggerId,
-                View = View
+                View = _view
             };
         }
 
         public ViewBuilder AddTitle(string text, string type = "plain_text")
         {
-            if (View.Title != null)
+            if (_view.Title != null)
                 return this;
 
-            View.Title = new Title
+            _view.Title = new Title
             {
                 Text = text,
                 Type = type
@@ -35,33 +35,13 @@ namespace SlackApi.App.Builders
             return this;
         }
 
-        public SlackViewRequest ConstructRequest()
+        public override IBlockKitBuilder AddBlock(string type, string blockId, Text? text, Accessory? accessory = null)
+            => base.AddBlock(type, blockId, text, accessory);
+
+        public new ISlackRequest ConstructRequest()
         {
-            View.Blocks = _blocks;
-            return Request;
-        }
-    }
-
-    public class BlockKitBuilder
-    {
-        internal readonly List<Block> _blocks = new List<Block>();
-
-        public BlockKitBuilder()
-        {
-
-        }
-
-        public BlockKitBuilder AddBlock(string type, string blockId, Text? text, Accessory? accessory = null)
-        {
-            _blocks.Add(new Block
-            {
-                Type = type,
-                BlockId = blockId,
-                Text = text,
-                Accessory = accessory
-            });
-
-            return this;
+            _view.Blocks = _blocks;
+            return _request;
         }
     }
 }
