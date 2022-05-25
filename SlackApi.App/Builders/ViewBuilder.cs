@@ -1,4 +1,4 @@
-﻿using SlackApi.Domain.DTOs;
+﻿using SlackApi.Domain.SlackDTOs;
 
 namespace SlackApi.App.Builders
 {
@@ -7,12 +7,14 @@ namespace SlackApi.App.Builders
         private readonly SlackViewPayload _view;
         private readonly SlackViewRequest _request;
 
-        public ViewBuilder(string type, string? callbackId = null, string? triggerId = null)
+        public ViewBuilder(string type, 
+            string? incomingCallbackId = null, 
+            string? triggerId = null)
         {
             _view = new SlackViewPayload
             {
                 Type = type,
-                CallbackId = callbackId
+                CallbackId = incomingCallbackId
             };
             _request = new SlackViewRequest 
             { 
@@ -35,8 +37,27 @@ namespace SlackApi.App.Builders
             return this;
         }
 
-        public override IBlockKitBuilder AddBlock(string type, string blockId, Text? text, Accessory? accessory = null)
-            => base.AddBlock(type, blockId, text, accessory);
+        public override ViewBuilder AddBlock(string type, string blockId, Text? text, Accessory? accessory = null)
+        {
+            base.AddBlock(type, blockId, text, accessory);
+            return this;
+        }
+
+        public override ViewBuilder AddUsersSelectBlock(string label, string actionId)
+        {
+            base.AddUsersSelectBlock(label, actionId);
+            return this;
+        }
+
+        public ViewBuilder AddSubmit(string textType, string text)
+        {
+            _view.Submit = new Submit
+            {
+                Type = textType,
+                Text = text
+            };
+            return this;
+        }
 
         public new ISlackRequest ConstructRequest()
         {

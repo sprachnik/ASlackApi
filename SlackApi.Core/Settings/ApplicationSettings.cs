@@ -1,4 +1,4 @@
-﻿namespace SlackApi.App.Settings
+﻿namespace SlackApi.Core.Settings
 {
     public class ApplicationSettings
     {

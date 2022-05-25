@@ -1,8 +1,5 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
-using SlackApi.Core.Enums;
-using SlackApi.Core.Extensions;
-using StackExchange.Profiling;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;

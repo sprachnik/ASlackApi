@@ -1,5 +1,5 @@
 ﻿using SlackApi.Domain.Constants;
-using SlackApi.Domain.DTOs;
+using SlackApi.Domain.SlackDTOs;
 
 namespace SlackApi.App.Services
 {
@@ -15,7 +15,7 @@ namespace SlackApi.App.Services
         public async Task<SlackResponse> ProcessShortCut(SlackInteractionPayload payload)
             => payload.CallbackId switch
             {
-                ShortCutCallback.SendABadge => await _badgeService.SendABadge(payload),
+                ShortCutCallback.SendABadge => await _badgeService.OpenSendBadgeView(payload),
                 _ => throw new NotImplementedException($"{payload.CallbackId} is not supported!")
             };
         

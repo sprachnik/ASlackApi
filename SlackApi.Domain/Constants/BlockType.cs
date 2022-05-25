@@ -9,5 +9,6 @@
         public const string Header = "header";
         public const string Actions = "actions";
         public const string Input = "input";
+        public const string Image = "image";
     }
 }

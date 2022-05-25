@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlackApi.Domain.Constants;
-using SlackApi.Domain.DTOs;
+using SlackApi.Domain.SlackDTOs;
 
 namespace SlackApi.App.Services
 {

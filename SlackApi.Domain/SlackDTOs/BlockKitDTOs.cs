@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace SlackApi.Domain.DTOs
+namespace SlackApi.Domain.SlackDTOs
 {
     public class Block
     {
@@ -79,6 +79,19 @@ namespace SlackApi.Domain.DTOs
         [JsonPropertyName("multiline")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public bool? Multiline { get; set; }
+
+        [JsonPropertyName("options")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<Option>? Options { get; set; }
+    }
+
+    public class Option
+    {
+        [JsonPropertyName("text")]
+        public Text? Text { get; set; }
+
+        [JsonPropertyName("value")]
+        public string? Value { get; set; }
     }
 
     public class Placeholder
@@ -90,6 +103,10 @@ namespace SlackApi.Domain.DTOs
         [JsonPropertyName("text")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Text { get; set; }
+
+        [JsonPropertyName("emoji")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public bool? Emoji { get; set; }
     }
 
     public class Field
@@ -101,6 +118,10 @@ namespace SlackApi.Domain.DTOs
         [JsonPropertyName("text")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Text { get; set; }
+
+        [JsonPropertyName("emoji")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public bool? Emoji { get; set; }
     }
 
     public class Accessory
@@ -124,6 +145,14 @@ namespace SlackApi.Domain.DTOs
         [JsonPropertyName("style")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Style { get; set; }
+
+        [JsonPropertyName("placeholder")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public Placeholder? Placeholder { get; set; }
+
+        [JsonPropertyName("options")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<Option>? Options { get; set; }
     }
 
     public class Label

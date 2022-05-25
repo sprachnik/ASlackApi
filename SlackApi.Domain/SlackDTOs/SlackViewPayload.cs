@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace SlackApi.Domain.DTOs
+namespace SlackApi.Domain.SlackDTOs
 {
     public interface ISlackRequest
     {

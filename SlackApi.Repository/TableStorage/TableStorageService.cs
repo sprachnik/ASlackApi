@@ -1,6 +1,6 @@
 ﻿using Azure.Data.Tables;
-using SlackApi.App.Settings;
 using SlackApi.Core.Extensions;
+using SlackApi.Core.Settings;
 using System.Linq.Expressions;
 
 namespace SlackApi.Repository.TableStorage
@@ -11,7 +11,7 @@ namespace SlackApi.Repository.TableStorage
     {
         private readonly TableServiceClient _client;
 
-        public TableStorageService(ConnectionStrings connectionStrings) : this (connectionStrings.TableStorage)
+        public TableStorageService(ConnectionStrings connectionStrings) : this (connectionStrings?.TableStorage)
         {
             
         }
@@ -22,7 +22,7 @@ namespace SlackApi.Repository.TableStorage
         }
 
         public async Task<Azure.Response> Delete<T>(ITableEntity tableEntity, 
-            string tableName, bool isExceptionCheck = true) where T : class, ITableEntity, new()
+            string tableName, bool isExceptionCheck = true, int depth = 0) where T : class, ITableEntity, new()
         {
             if (tableEntity == null)
                 throw new ArgumentNullException(nameof(tableEntity), "Cannot be null!");
@@ -35,10 +35,13 @@ namespace SlackApi.Repository.TableStorage
             }
             catch (Exception e)
             {
+                if (depth > 1)
+                    throw;
+
                 if (e.Message.Equals("Precondition Failed") && isExceptionCheck)
                 {
                     tableEntity = await GetAsync<T>(tableName, tableEntity.PartitionKey, tableEntity.RowKey);
-                    return await Delete<T>(tableEntity, tableName, false);
+                    return await Delete<T>(tableEntity, tableName, false, depth + 1);
                 }
 
                 throw;
@@ -127,7 +130,7 @@ namespace SlackApi.Repository.TableStorage
             }
         }
 
-        public async Task<List<T>> UpsertCollectionAsync<T>(List<T> tableEntities, string tableName)
+        public async Task<List<T>> UpsertCollectionAsync<T>(List<T> tableEntities, string tableName, int depth = 0)
             where T : ITableEntity
         {
             if (tableEntities.IsNullOrEmpty())
@@ -145,19 +148,22 @@ namespace SlackApi.Repository.TableStorage
             }
             catch (Azure.RequestFailedException)
             {
+                if (depth > 1)
+                    throw;
+
                 await table.CreateIfNotExistsAsync();
-                return await UpsertCollectionAsync(tableEntities, tableName);
+                return await UpsertCollectionAsync(tableEntities, tableName, depth + 1);
             }
         }
 
-        public async Task<List<T>> GetAllAsync<T>(string tableName)
+        public async Task<List<T>> GetAllAsync<T>(string tableName, int depth = 0)
             where T : class, ITableEntity, new()
         {
             var table = _client.GetTableClient(tableName);
 
             try
             {
-                var result = table.QueryAsync<T>(q => q.PartitionKey != null);
+                var result = table.QueryAsync<T>($"{TableStorageConstants.PartitionKey} ne ''");
 
                 List<T> results = new();
 
@@ -170,13 +176,16 @@ namespace SlackApi.Repository.TableStorage
             }
             catch (Azure.RequestFailedException)
             {
+                if (depth > 1)
+                    throw;
+
                 await table.CreateIfNotExistsAsync();
-                return await GetAllAsync<T>(tableName);
+                return await GetAllAsync<T>(tableName, depth + 1);
             }
         }
 
 
-        public async Task<List<T>> GetAllByPartitionKeyAsync<T>(string tableName, string partitionKey)
+        public async Task<List<T>> GetAllByPartitionKeyAsync<T>(string tableName, string partitionKey, int depth = 0)
             where T : class, ITableEntity, new()
         {
             var table = _client.GetTableClient(tableName);
@@ -196,12 +205,15 @@ namespace SlackApi.Repository.TableStorage
             }
             catch (Azure.RequestFailedException)
             {
+                if (depth > 1)
+                    throw;
+
                 await table.CreateIfNotExistsAsync();
-                return await GetAllByPartitionKeyAsync<T>(tableName, partitionKey);
+                return await GetAllByPartitionKeyAsync<T>(tableName, partitionKey, depth + 1);
             }
         }
 
-        public async Task<List<T>> GetAllByQuery<T>(string tableName, string query)
+        public async Task<List<T>> GetAllByQuery<T>(string tableName, string query, int depth = 0)
             where T : class, ITableEntity, new()
         {
             var table = _client.GetTableClient(tableName);
@@ -221,13 +233,16 @@ namespace SlackApi.Repository.TableStorage
             }
             catch (Azure.RequestFailedException)
             {
+                if (depth > 1)
+                    throw;
+
                 await table.CreateIfNotExistsAsync();
-                return await GetAllByQuery<T>(tableName, query);
+                return await GetAllByQuery<T>(tableName, query, depth + 1);
             }
         }
 
         public async Task<List<T>> GetAllByQuery<T>(string tableName,
-            Expression<Func<T, bool>> entityQuery) where T : class, ITableEntity, new()
+            Expression<Func<T, bool>> entityQuery, int depth = 0) where T : class, ITableEntity, new()
         {
             var table = _client.GetTableClient(tableName);
 
@@ -246,8 +261,11 @@ namespace SlackApi.Repository.TableStorage
             }
             catch (Azure.RequestFailedException)
             {
+                if (depth > 1)
+                    throw;
+
                 await table.CreateIfNotExistsAsync();
-                return await GetAllByQuery(tableName, entityQuery);
+                return await GetAllByQuery(tableName, entityQuery, depth + 1);
             }
         }
 

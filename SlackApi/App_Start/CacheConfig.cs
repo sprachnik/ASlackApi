@@ -1,4 +1,4 @@
-﻿using SlackApi.App.Settings;
+﻿using SlackApi.Core.Settings;
 
 namespace SlackApi.App_Start
 {

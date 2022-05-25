@@ -1,5 +1,7 @@
-﻿using SlackApi.App.Services;
-using SlackApi.App.Settings;
+﻿using SlackApi.App.MemStore;
+using SlackApi.App.Services;
+using SlackApi.Core.Settings;
+using SlackApi.Repository.Cache;
 
 namespace SlackApi.App_Start
 {
@@ -15,6 +17,8 @@ namespace SlackApi.App_Start
             services.AddTransient<ISlackAuthService, SlackAuthService>();
             services.AddTransient<IShortCutService, ShortcutService>();
             services.AddTransient<IBadgeService, BadgeService>();
+            services.AddTransient<ICache, MemCache>();
+            services.AddTransient<ITableStorageMemStore, TableStorageMemStore>();
 
             // Scopes
 

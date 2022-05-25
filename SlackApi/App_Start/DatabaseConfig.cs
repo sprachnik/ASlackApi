@@ -1,5 +1,5 @@
 ﻿using Dapper.Contrib.Extensions;
-using SlackApi.App.Settings;
+using SlackApi.Core.Settings;
 using SlackApi.Repository.SQL;
 using SlackApi.Repository.TableStorage;
 

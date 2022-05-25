@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Server.Kestrel.Core;
-using SlackApi.App.Settings;
+using SlackApi.App.MemStore;
 using SlackApi.App_Start;
+using SlackApi.Core.Settings;
+using SlackApi.Domain.BadgeDTOs;
+using SlackApi.Domain.Constants;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -43,6 +46,16 @@ namespace SlackApi
                 .ConfigureHttpClient()
                 .RegisterAuthenticationFilters()
                 .AddAntiforgery(options => options.SuppressXFrameOptionsHeader = true);
+        }
+
+        public void Init(IServiceProvider services)
+        {
+            var tableStorageMemStore = services.GetService<ITableStorageMemStore>();
+
+            if (tableStorageMemStore == null)
+                throw new Exception($"Unable to init {nameof(ITableStorageMemStore)}!");
+
+            tableStorageMemStore.Init<BadgeTableEntity>(TableStorageTable.Badges).GetAwaiter().GetResult();
         }
 
         #region private methods

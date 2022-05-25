@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SlackApi.App.Auth;
-using SlackApi.App.Settings;
 using SlackApi.Core.Extensions;
+using SlackApi.Core.Settings;
 using System.Security.Authentication;
 using System.Text;
 

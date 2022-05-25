@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using SlackApi.App.Settings;
+using SlackApi.Core.Settings;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace SlackApi.App_Start

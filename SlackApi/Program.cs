@@ -17,6 +17,8 @@ startup.ConfigureServices(builder.Services);
 
 var app = builder.Build();
 
+startup.Init(app.Services);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

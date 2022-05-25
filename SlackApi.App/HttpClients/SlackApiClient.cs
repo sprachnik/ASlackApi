@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
-using SlackApi.App.Settings;
-using SlackApi.Domain.DTOs;
+using SlackApi.Core.Settings;
+using SlackApi.Domain.SlackDTOs;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -38,11 +38,12 @@ namespace SlackApi.App.HttpClients
                     {
                         if (3 != retries)
                             return;
+
                         _logger.LogError(exception.Message);
                     });
         }
 
-        public async Task<SlackApiResponse?> SlackPostRequest<T>(string uri, T payload, string? triggerId = null) where T : class
+        public async Task<SlackApiResponse?> SlackPostRequest<T>(string uri, T payload) where T : class
         {
             if (string.IsNullOrEmpty(uri))
                 throw new Exception("uri cannot be null!");
@@ -53,7 +54,7 @@ namespace SlackApi.App.HttpClients
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                RequestUri = new Uri($"{uri}{(string.IsNullOrEmpty(triggerId) ? "" : $"?trigger_id={triggerId}")}"),
+                RequestUri = new Uri(uri),
                 Content = stringContent,
                 Headers = {
                     Authorization = new AuthenticationHeaderValue("Bearer", _outgoingOAuthToken),
@@ -75,7 +76,12 @@ namespace SlackApi.App.HttpClients
             if (string.IsNullOrWhiteSpace(content))
                 throw new Exception($"{uri} failed to yield a valid response!");
 
-            return JsonSerializer.Deserialize<SlackApiResponse?>(content);
+            var slackApiResponse = JsonSerializer.Deserialize<SlackApiResponse?>(content);
+
+            if (slackApiResponse?.Ok == false)
+                _logger.LogError($"SlackPostRequest error(s) returned from Slack: {slackApiResponse.Error}", slackApiResponse);
+
+            return slackApiResponse;
         }
     }
 }

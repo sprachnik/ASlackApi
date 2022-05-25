@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SlackApi.App.Services;
-using SlackApi.Domain.DTOs;
+using SlackApi.Domain.SlackDTOs;
 using System.Text.Json;
 using System.Web;
 
@@ -28,7 +28,6 @@ namespace SlackApi.Controllers
             var decodedPayload = HttpUtility.UrlDecode(payload);
             var interactiveEvent = JsonSerializer.Deserialize<SlackInteractionPayload>(decodedPayload);
             await _slackInteractiveEventService.ProcessInteractiveEvent(interactiveEvent);
-            Console.WriteLine(decodedPayload);
             return new SlackResponse();
         }
 
