@@ -30,6 +30,10 @@ namespace SlackApi.Domain.SlackDTOs
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<Field>? Fields { get; set; }
 
+        [JsonPropertyName("title")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public Title? Title { get; set; }
+
         [JsonPropertyName("element")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Element? Element { get; set; }
@@ -37,6 +41,14 @@ namespace SlackApi.Domain.SlackDTOs
         [JsonPropertyName("optional")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public bool? Optional { get; set; }
+
+        [JsonPropertyName("image_url")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? ImageUrl { get; set; }
+
+        [JsonPropertyName("alt_text")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? ImageAltText { get; set; }
     }
 
     public class Text
@@ -164,5 +176,9 @@ namespace SlackApi.Domain.SlackDTOs
         [JsonPropertyName("text")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Text { get; set; }
+
+        [JsonPropertyName("emoji")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public bool? Emoji { get; set; }
     }
 }

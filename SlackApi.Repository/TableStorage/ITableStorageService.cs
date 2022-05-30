@@ -43,7 +43,18 @@ namespace SlackApi.Repository.TableStorage
         /// </summary>
         /// <param name="tableEntity">The table entity to insert.</param>
         /// <param name="tableName">The table to use.</param>
-        Task<Azure.Response> UpsertAsync<T>(T tableEntity, string tableName)
+        Task<Azure.Response> UpsertAsync<T>(T tableEntity, string tableName, int depth = 0)
+            where T : ITableEntity;
+
+        /// <summary>
+        /// Insert or replace table entity to the specified table.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="tableEntity"></param>
+        /// <param name="tableName"></param>
+        /// <param name="depth"></param>
+        /// <returns></returns>
+        Azure.Response Upsert<T>(T tableEntity, string tableName, int depth = 0)
             where T : ITableEntity;
 
         /// <summary>
@@ -76,4 +87,6 @@ namespace SlackApi.Repository.TableStorage
 
         Task<List<Azure.Response>> DeleteByPartitionKey(string tableName, string partitionKey);
     }
+
+    public interface ITableStorageTelemetry : ITableStorageService { };
 }

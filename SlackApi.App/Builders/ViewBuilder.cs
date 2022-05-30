@@ -37,9 +37,29 @@ namespace SlackApi.App.Builders
             return this;
         }
 
-        public override ViewBuilder AddBlock(string type, string blockId, Text? text, Accessory? accessory = null)
+        public override ViewBuilder AddInputBlock(string blockId,
+            Element? element = null,
+            Label? label = null)
         {
-            base.AddBlock(type, blockId, text, accessory);
+            base.AddInputBlock(blockId, element, label);
+            return this;
+        }
+
+        public override ViewBuilder AddAccessoryBlock(string type, 
+            string blockId, 
+            Text? text = null, 
+            Accessory? accessory = null)
+        {
+            base.AddAccessoryBlock(type, blockId, text, accessory);
+            return this;
+        }
+
+        public override ViewBuilder AddImageBlock(string blockId,
+            string imageUrl,
+            string altText,
+            Title? title = null)
+        {
+            base.AddImageBlock(blockId, imageUrl, altText, title);
             return this;
         }
 

@@ -5,9 +5,9 @@ namespace SlackApi.App.Services
 {
     public class ShortcutService : IShortCutService
     {
-        private readonly IBadgeService _badgeService;
+        private readonly IBadgeViewModalService _badgeService;
 
-        public ShortcutService(IBadgeService badgeService)
+        public ShortcutService(IBadgeViewModalService badgeService)
         {
             _badgeService = badgeService;
         }

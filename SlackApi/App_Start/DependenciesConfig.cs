@@ -16,7 +16,7 @@ namespace SlackApi.App_Start
             services.AddTransient<ISlackInteractiveEventService, SlackInteractiveEventService>();
             services.AddTransient<ISlackAuthService, SlackAuthService>();
             services.AddTransient<IShortCutService, ShortcutService>();
-            services.AddTransient<IBadgeService, BadgeService>();
+            services.AddTransient<IBadgeViewModalService, BadgeViewModalService>();
             services.AddTransient<ICache, MemCache>();
             services.AddTransient<ITableStorageMemStore, TableStorageMemStore>();
 

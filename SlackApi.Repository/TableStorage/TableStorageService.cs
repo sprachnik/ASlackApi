@@ -7,7 +7,7 @@ namespace SlackApi.Repository.TableStorage
 {
     // https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/tables/Azure.Data.Tables/tests/samples
     // https://devblogs.microsoft.com/azure-sdk/announcing-the-new-azure-data-tables-libraries/
-    public class TableStorageService : ITableStorageService, IDisposable
+    public class TableStorageService : ITableStorageService, ITableStorageTelemetry, IDisposable
     {
         private readonly TableServiceClient _client;
 
@@ -16,8 +16,11 @@ namespace SlackApi.Repository.TableStorage
             
         }
 
-        public TableStorageService(string connectionString)
+        public TableStorageService(string? connectionString)
         {
+            if (connectionString == null)
+                throw new ArgumentNullException(nameof(connectionString));
+
             _client = new TableServiceClient(connectionString);
         }
 
@@ -112,7 +115,7 @@ namespace SlackApi.Repository.TableStorage
             };
         }
 
-        public async Task<Azure.Response> UpsertAsync<T>(T tableEntity, string tableName)
+        public async Task<Azure.Response> UpsertAsync<T>(T tableEntity, string tableName, int depth = 0)
             where T : ITableEntity
         {
             // Retrieve a reference to the table.
@@ -124,9 +127,33 @@ namespace SlackApi.Repository.TableStorage
             }
             catch (Azure.RequestFailedException)
             {
+                if (depth > 1)
+                    throw;
+
                 // Create the table if it doesn't exist.
                 await table.CreateIfNotExistsAsync();
-                return await table.UpsertEntityAsync(tableEntity);
+                return await UpsertAsync(tableEntity, tableName, depth + 1);
+            }
+        }
+
+        public Azure.Response Upsert<T>(T tableEntity, string tableName, int depth = 0)
+            where T : ITableEntity
+        {
+            // Retrieve a reference to the table.
+            var table = _client.GetTableClient(tableName);
+
+            try
+            {
+                return table.UpsertEntity(tableEntity);
+            }
+            catch (Azure.RequestFailedException)
+            {
+                if (depth > 1)
+                    throw;
+
+                // Create the table if it doesn't exist.
+                table.CreateIfNotExists();
+                return Upsert(tableEntity, tableName, depth + 1);
             }
         }
 

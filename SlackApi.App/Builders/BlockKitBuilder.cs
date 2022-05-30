@@ -7,8 +7,32 @@ namespace SlackApi.App.Builders
     {
         internal readonly List<Block> _blocks = new();
 
-        public virtual IBlockKitBuilder AddBlock(string type, string blockId, Text? text, Accessory? accessory = null)
+        public virtual IBlockKitBuilder AddInputBlock(string blockId,
+            Element? element = null,
+            Label? label = null)
         {
+            if (element == null || blockId == null)
+                throw new ArgumentNullException(nameof(element));
+
+            _blocks.Add(new Block
+            {
+                BlockId = blockId,
+                Type = BlockType.Input,
+                Element = element,
+                Label = label
+            });
+
+            return this;
+        }
+
+        public virtual IBlockKitBuilder AddAccessoryBlock(string type, 
+            string blockId, 
+            Text? text, 
+            Accessory? accessory = null)
+        {
+            if (type == null || blockId == null)
+                throw new ArgumentNullException(nameof(type));
+
             _blocks.Add(new Block
             {
                 Type = type,
@@ -20,7 +44,28 @@ namespace SlackApi.App.Builders
             return this;
         }
 
-        public virtual IBlockKitBuilder AddUsersSelectBlock(string label = "Select a user", string actionId = "users-select-action")
+        public virtual IBlockKitBuilder AddImageBlock(string blockId,
+            string imageUrl,
+            string altText,
+            Title? title = null)
+        {
+            if (imageUrl == null || altText == null)
+                throw new ArgumentNullException(nameof(imageUrl));
+
+            _blocks.Add(new Block
+            {
+                Type = BlockType.Image,
+                BlockId = blockId,
+                ImageUrl = imageUrl,
+                ImageAltText = altText,
+                Title = title
+            });
+
+            return this;
+        }
+
+        public virtual IBlockKitBuilder AddUsersSelectBlock(string label = "Select a user", 
+            string actionId = "users-select-action")
         {
             _blocks.Add(new Block
             {

@@ -75,5 +75,9 @@ namespace SlackApi.Domain.SlackDTOs
 
         [JsonPropertyName("text")]
         public string? Text { get; set; }
+
+        [JsonPropertyName("emoji")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public bool? Emoji { get; set; }
     }
 }

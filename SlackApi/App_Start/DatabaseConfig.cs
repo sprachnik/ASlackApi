@@ -24,6 +24,8 @@ namespace SlackApi.App_Start
             services.AddSingleton(connectionStrings);
             services.AddSingleton<ITableStorageService>(TableStorageFactory
                 .Create(connectionStrings.TableStorage));
+            services.AddSingleton<ITableStorageTelemetry>(new
+                TableStorageService(connectionStrings.TableStorageTelemetry));
 
             SqlMapperExtensions.TableNameMapper = (type) =>
             {

@@ -8,13 +8,14 @@ using SlackApi.Repository.TableStorage;
 
 namespace SlackApi.App.Services
 {
-    public class BadgeService : IBadgeService
+    public class BadgeViewModalService : IBadgeViewModalService
     {
         private readonly SlackApiClient _slackApiClient;
         private readonly ITableStorageService _tableStorageService;
         private readonly ITableStorageMemStore _tableStorageMemStore;
+        private readonly string _placeHolderImageShrugUrl = "https://i.imgur.com/Zam8zGt.jpg";
 
-        public BadgeService(SlackApiClient slackApiClient,
+        public BadgeViewModalService(SlackApiClient slackApiClient,
             ITableStorageService tableStorageService,
             ITableStorageMemStore tableStorageMemStore)
         {
@@ -28,7 +29,7 @@ namespace SlackApi.App.Services
             if (payload == null)
                 throw new ArgumentNullException(nameof(payload));
 
-            var view = await GenerateSendABadgeView(payload?.CallbackId, payload?.TriggerId);
+            var view = await GenerateSendABadgeView(payload?.CallbackId, payload?.TriggerId, _placeHolderImageShrugUrl);
             await _slackApiClient.SlackPostRequest(SlackEndpoints.ViewsOpenUrl, view);
 
             return new SlackResponse();
@@ -36,7 +37,9 @@ namespace SlackApi.App.Services
 
         #region private methods
 
-        private async Task<SlackViewRequest> GenerateSendABadgeView(string? callbackId, string? triggerId)
+        private async Task<SlackViewRequest> GenerateSendABadgeView(string? callbackId, 
+            string? triggerId,
+            string? badgeImageUrl)
         {
             if (string.IsNullOrWhiteSpace(callbackId))
                 throw new ArgumentNullException(nameof(callbackId));
@@ -46,16 +49,16 @@ namespace SlackApi.App.Services
 
             return (SlackViewRequest)new ViewBuilder(SlackResponsePayloadType.Modal, callbackId, triggerId)
                 .AddTitle("Send a badge")
-                .AddBlock(BlockType.Section, 
-                    blockId: "intro", 
-                    new Text 
-                    { 
-                        Type = TextType.Markdown, 
-                        BlockText = "*Select a funky badge for a colleague!*" 
+                .AddAccessoryBlock(BlockType.Section,
+                    blockId: "intro",
+                    new Text
+                    {
+                        Type = TextType.Markdown,
+                        BlockText = "*Select a funky badge for a colleague!*"
                     })
                 .AddUsersSelectBlock("Select a user", UserSelectionActionId)
-                .AddBlock(BlockType.Section, 
-                    blockId: BadgeSelectActionId,
+                .AddAccessoryBlock(BlockType.Section,
+                    blockId: BadgeSelectBlockId,
                     new Text
                     {
                         Type = TextType.Markdown,
@@ -69,16 +72,37 @@ namespace SlackApi.App.Services
                             Type = TextType.PlainText,
                             Text = "Select an item"
                         },
-                        Options = (await GetAllBadges()).Select(b => 
-                            new Option 
-                            { 
-                                Text = new Text 
-                                { 
+                        Options = (await GetAllBadges()).Select(b =>
+                            new Option
+                            {
+                                Text = new Text
+                                {
                                     Type = TextType.PlainText,
                                     BlockText = b.Name
                                 },
                                 Value = b.PartitionKey
                             }).ToList()
+                    })
+                .AddImageBlock(blockId: BadgeImageBlockId,
+                    imageUrl: badgeImageUrl,
+                    altText: "Select a badge...",
+                    new Title
+                    {
+                        Text = "Select a badge...",
+                        Type = TextType.PlainText
+                    })
+                .AddInputBlock(blockId: BadgeFeedbackBlockId,
+                    new Element
+                    {
+                        Type = ElementType.PlainTextInput,
+                        Multiline = true,
+                        ActionId = BadgeFeedbackActionId,
+                    },
+                    new Label
+                    {
+                        Type = TextType.PlainText,
+                        Text = "Feedback",
+                        Emoji = true
                     })
                 .AddSubmit(TextType.PlainText, "Submit")
                 .ConstructRequest();
@@ -92,11 +116,17 @@ namespace SlackApi.App.Services
 
         #endregion
 
-        public readonly string BadgeSelectActionId = "badge-select";
+        // Actions
         public readonly string UserSelectionActionId = "select-user-action";
+        public readonly string BadgeFeedbackActionId = "badge-feedback-action";
+
+        // Blocks
+        public readonly string BadgeImageBlockId = "badge-image-block";
+        public readonly string BadgeFeedbackBlockId = "badge-feedback-block";
+        public readonly string BadgeSelectBlockId = "badge-select-block";
     }
 
-    public interface IBadgeService
+    public interface IBadgeViewModalService
     {
         Task<SlackResponse> OpenSendBadgeView(SlackInteractionPayload payload);
     }
