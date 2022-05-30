@@ -9,14 +9,17 @@ namespace SlackApi.App.Services
     public class SlackInteractiveEventService : ISlackInteractiveEventService
     {
         private readonly IShortCutService _shortCutService;
+        private readonly IBlockActionService _blockActionService;
         private readonly TelemetryClient _telemetryClient;
         private readonly ITableStorageTelemetry _tableStorageTelemetry;
 
         public SlackInteractiveEventService(IShortCutService shortCutService,
+            IBlockActionService blockActionService,
             TelemetryClient telemetryClient,
             ITableStorageTelemetry tableStorageTelemetry)
         {
             _shortCutService = shortCutService;
+            _blockActionService = blockActionService;
             _telemetryClient = telemetryClient;
             _tableStorageTelemetry = tableStorageTelemetry;
         }
@@ -49,10 +52,10 @@ namespace SlackApi.App.Services
             => interactiveEvent?.Type switch
             {
                 SlackInteractionType.ShortCut => await _shortCutService.ProcessShortCut(interactiveEvent),
-                _ => new SlackResponse()
+                SlackInteractionType.BlockActions => await _blockActionService.ProcessBlockActions(interactiveEvent),
+                _ => throw new NotImplementedException()
             };
         
-
         #endregion
     }
 

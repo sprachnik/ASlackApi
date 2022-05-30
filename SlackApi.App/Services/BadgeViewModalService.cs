@@ -4,6 +4,7 @@ using SlackApi.App.MemStore;
 using SlackApi.Domain.BadgeDTOs;
 using SlackApi.Domain.Constants;
 using SlackApi.Domain.SlackDTOs;
+using SlackApi.Repository.Cache;
 using SlackApi.Repository.TableStorage;
 
 namespace SlackApi.App.Services
@@ -13,15 +14,18 @@ namespace SlackApi.App.Services
         private readonly SlackApiClient _slackApiClient;
         private readonly ITableStorageService _tableStorageService;
         private readonly ITableStorageMemStore _tableStorageMemStore;
+        private readonly ICache _cache;
         private readonly string _placeHolderImageShrugUrl = "https://i.imgur.com/Zam8zGt.jpg";
 
         public BadgeViewModalService(SlackApiClient slackApiClient,
             ITableStorageService tableStorageService,
-            ITableStorageMemStore tableStorageMemStore)
+            ITableStorageMemStore tableStorageMemStore,
+            ICache cache)
         {
             _slackApiClient = slackApiClient;
             _tableStorageService = tableStorageService;
             _tableStorageMemStore = tableStorageMemStore;
+            _cache = cache;
         }
 
         public async Task<SlackResponse> OpenSendBadgeView(SlackInteractionPayload payload)
@@ -29,24 +33,50 @@ namespace SlackApi.App.Services
             if (payload == null)
                 throw new ArgumentNullException(nameof(payload));
 
-            var view = await GenerateSendABadgeView(payload?.CallbackId, payload?.TriggerId, _placeHolderImageShrugUrl);
-            await _slackApiClient.SlackPostRequest(SlackEndpoints.ViewsOpenUrl, view);
+            var request = await GenerateSendABadgeView(payload?.CallbackId, payload?.TriggerId, _placeHolderImageShrugUrl);
+            await _slackApiClient.SlackPostRequest(SlackEndpoints.ViewsOpenUrl, request);
 
-            return new SlackResponse();
+            return new();
+        }
+
+        public async Task<SlackApiResponse> SelectBadgeAction(SlackInteractionPayload payload)
+        {
+            if (payload?.View?.RootViewId == null)
+                throw new ArgumentNullException(nameof(payload));
+
+            var selectedBadgeValue = payload.Actions?.Select(a => a.SelectedOption)?.FirstOrDefault()?.Value;
+
+            if (selectedBadgeValue == null)
+                throw new ArgumentNullException(nameof(selectedBadgeValue));
+
+            var badges = await GetAllBadges();
+            var selectedBadge = badges?.FirstOrDefault(b => b.Name == selectedBadgeValue);
+
+            if (selectedBadge?.ImageUrl == null)
+                throw new ArgumentNullException(nameof(selectedBadge));
+
+            var request = await GenerateSendABadgeView(callbackId: null, triggerId: null, 
+                selectedBadge.ImageUrl, selectedBadge.Name);
+            
+            if (request?.View == null)
+                throw new ArgumentNullException(nameof(request));
+
+            request.ViewId = payload?.View?.RootViewId;
+            
+            await _slackApiClient.SlackPostRequest(SlackEndpoints.ViewsUpdateUrl, request);
+
+            return new();
         }
 
         #region private methods
 
+        private string GetBadgeViewIdCacheKey(string viewId) => $"NewBadgeView:{viewId}";
+
         private async Task<SlackViewRequest> GenerateSendABadgeView(string? callbackId, 
             string? triggerId,
-            string? badgeImageUrl)
+            string? badgeImageUrl,
+            string? badgeText = null)
         {
-            if (string.IsNullOrWhiteSpace(callbackId))
-                throw new ArgumentNullException(nameof(callbackId));
-
-            if (string.IsNullOrWhiteSpace(triggerId))
-                throw new ArgumentNullException(nameof(triggerId));
-
             return (SlackViewRequest)new ViewBuilder(SlackResponsePayloadType.Modal, callbackId, triggerId)
                 .AddTitle("Send a badge")
                 .AddAccessoryBlock(BlockType.Section,
@@ -84,11 +114,11 @@ namespace SlackApi.App.Services
                             }).ToList()
                     })
                 .AddImageBlock(blockId: BadgeImageBlockId,
-                    imageUrl: badgeImageUrl,
-                    altText: "Select a badge...",
+                    imageUrl: badgeImageUrl ?? _placeHolderImageShrugUrl,
+                    altText: badgeText ?? "Select a badge...",
                     new Title
                     {
-                        Text = "Select a badge...",
+                        Text = badgeText ?? "Select a badge...",
                         Type = TextType.PlainText
                     })
                 .AddInputBlock(blockId: BadgeFeedbackBlockId,
@@ -117,17 +147,18 @@ namespace SlackApi.App.Services
         #endregion
 
         // Actions
-        public readonly string UserSelectionActionId = "select-user-action";
-        public readonly string BadgeFeedbackActionId = "badge-feedback-action";
+        public const string UserSelectionActionId = "select-user-action";
+        public const string BadgeFeedbackActionId = "badge-feedback-action";
 
         // Blocks
-        public readonly string BadgeImageBlockId = "badge-image-block";
-        public readonly string BadgeFeedbackBlockId = "badge-feedback-block";
-        public readonly string BadgeSelectBlockId = "badge-select-block";
+        public const string BadgeImageBlockId = "badge-image-block";
+        public const string BadgeFeedbackBlockId = "badge-feedback-block";
+        public const string BadgeSelectBlockId = "badge-select-block";
     }
 
     public interface IBadgeViewModalService
     {
         Task<SlackResponse> OpenSendBadgeView(SlackInteractionPayload payload);
+        Task<SlackApiResponse> SelectBadgeAction(SlackInteractionPayload payload);
     }
 }

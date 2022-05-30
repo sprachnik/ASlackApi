@@ -127,6 +127,18 @@ namespace SlackApi.Domain.SlackDTOs
 
         [JsonPropertyName("action_ts")]
         public string? ActionTs { get; set; }
+
+        [JsonPropertyName("selected_option")]
+        public SelectedOption? SelectedOption { get; set; }
+    }
+
+    public class SelectedOption
+    {
+        [JsonPropertyName("text")]
+        public Text? Text { get; set; }
+
+        [JsonPropertyName("value")]
+        public string? Value { get; set; }
     }
 
 

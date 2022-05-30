@@ -13,7 +13,12 @@ namespace SlackApi.Domain.SlackDTOs
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? TriggerId { get; set; }
 
+        [JsonPropertyName("view_id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? ViewId { get; set; }
+
         [JsonPropertyName("view")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public SlackViewPayload? View { get; set; }
     }
 
@@ -48,6 +53,47 @@ namespace SlackApi.Domain.SlackDTOs
         [JsonPropertyName("callback_id")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? CallbackId { get; set; }
+
+        [JsonPropertyName("clear_on_close")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public bool? ClearOnClose { get; set; }
+
+        [JsonPropertyName("notify_on_close")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public bool? NotifyOnClose { get; set; }
+
+        // Api Response Properties - Don't need setting
+        [JsonPropertyName("id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? ViewId { get; set; }
+
+        [JsonPropertyName("team_id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? TeamId { get; set; }
+
+        [JsonPropertyName("previous_view_id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? PreviousViewId { get; set; }
+
+        [JsonPropertyName("root_view_id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? RootViewId { get; set; }
+
+        [JsonPropertyName("app_id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? AppId { get; set; }
+
+        [JsonPropertyName("external_id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? ExternalId { get; set; }
+
+        [JsonPropertyName("app_installed_team_id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? AppInstalledTeamId { get; set; }
+
+        [JsonPropertyName("bot_id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? BotId { get; set; }
     }
 
     public class Close
