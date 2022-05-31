@@ -1,4 +1,5 @@
-﻿using SlackApi.Core.Extensions;
+﻿using SlackApi.Core.Exceptions;
+using SlackApi.Core.Extensions;
 using SlackApi.Domain.SlackDTOs;
 using System;
 using System.Collections.Generic;
@@ -22,15 +23,17 @@ namespace SlackApi.App.Services
             if (interactiveEvent?.Actions == null)
                 return new();
 
-            foreach (var action in interactiveEvent.Actions)
-            {
-                _ = action switch
+            Parallel.ForEach(interactiveEvent.Actions,
+                async action =>
                 {
-
-                    { BlockId: BadgeViewModalService.BadgeSelectBlockId } => await _badgeViewModalService.SelectBadgeAction(interactiveEvent),
-                    _ => throw new Exception("No action found!")
-                };
-            }
+                    _ = action switch
+                    {
+                        // Give Badge View Modal
+                        { ActionId: BadgeViewModalService.BadgeSelectActionId } => await _badgeViewModalService.SelectBadgeAction(interactiveEvent),
+                        { ActionId: BadgeViewModalService.UserSelectionActionId } => await _badgeViewModalService.SelectUserAction(interactiveEvent),
+                        _ => throw new NotImplementedException($"No action found for {action.ActionId} or {action.BlockId}!")
+                    };
+                });
 
             return new();
         }

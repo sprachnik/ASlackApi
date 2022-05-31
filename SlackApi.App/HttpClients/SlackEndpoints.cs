@@ -5,6 +5,8 @@
     /// </summary>
     public static class SlackEndpoints
     {
+        #region views
+
         /// <summary>
         /// https://api.slack.com/methods/views.open
         /// </summary>
@@ -24,5 +26,16 @@
         /// https://api.slack.com/methods/views.push
         /// </summary>
         public const string ViewsPushUrl = "https://slack.com/api/views.push";
+
+        #endregion
+
+        #region users
+
+        /// <summary>
+        /// https://api.slack.com/methods/users.info
+        /// </summary>
+        public const string UsersInfoUrl = "https://slack.com/api/users.info";
+
+        #endregion
     }
 }

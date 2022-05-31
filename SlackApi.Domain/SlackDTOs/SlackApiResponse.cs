@@ -15,6 +15,9 @@ namespace SlackApi.Domain.SlackDTOs
 
         [JsonPropertyName("view")]
         public SlackViewPayload? View { get; set; }
+
+        [JsonPropertyName("user")]
+        public User? User { get; set; }
     }
 
     public class ResponseMetadata

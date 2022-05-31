@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
 using SlackApi.Core.Settings;
@@ -41,6 +42,48 @@ namespace SlackApi.App.HttpClients
 
                         _logger.LogError(exception.Message);
                     });
+        }
+
+        public async Task<SlackApiResponse?> SlackGetRequest(string uri, 
+            Dictionary<string, string?> queryParams)
+        {
+            if (string.IsNullOrEmpty(uri))
+                throw new ArgumentNullException(nameof(uri));
+
+            if (queryParams.Any())
+                uri = QueryHelpers.AddQueryString(uri, queryParams);
+
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(uri),
+                Headers = 
+                {
+                    Authorization = new AuthenticationHeaderValue("Bearer", _outgoingOAuthToken),
+                }
+            };
+
+            HttpResponseMessage? response = null;
+
+            await _policy.ExecuteAsync(async () => {
+                response = await _client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+            });
+
+            if (response == null)
+                throw new Exception($"{uri} failed to yield a valid response!");
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (string.IsNullOrWhiteSpace(content))
+                throw new Exception($"{uri} failed to yield a valid response!");
+
+            var slackApiResponse = JsonSerializer.Deserialize<SlackApiResponse?>(content);
+
+            if (slackApiResponse?.Ok == false)
+                _logger.LogError($"SlackPostRequest error(s) returned from Slack: {slackApiResponse.Error}", slackApiResponse);
+
+            return slackApiResponse;
         }
 
         public async Task<SlackApiResponse?> SlackPostRequest<T>(string uri, T payload) where T : class

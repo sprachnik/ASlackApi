@@ -128,6 +128,9 @@ namespace SlackApi.Domain.SlackDTOs
         [JsonPropertyName("action_ts")]
         public string? ActionTs { get; set; }
 
+        [JsonPropertyName("selected_user")]
+        public string? SelectedUser { get; set; }
+
         [JsonPropertyName("selected_option")]
         public SelectedOption? SelectedOption { get; set; }
     }
@@ -200,22 +203,6 @@ namespace SlackApi.Domain.SlackDTOs
 
         [JsonPropertyName("domain")]
         public string? Domain { get; set; }
-    }
-
-
-    public class User
-    {
-        [JsonPropertyName("id")]
-        public string? Id { get; set; }
-
-        [JsonPropertyName("username")]
-        public string? Username { get; set; }
-
-        [JsonPropertyName("name")]
-        public string? Name { get; set; }
-
-        [JsonPropertyName("team_id")]
-        public string? TeamId { get; set; }
     }
 
     public class View

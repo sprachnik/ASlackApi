@@ -3,5 +3,6 @@
     public static class TableStorageTable
     {
         public const string Badges = "Badges";
+        public const string UserProfiles = "UserProfiles";
     }
 }

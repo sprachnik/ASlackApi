@@ -53,7 +53,7 @@ namespace SlackApi.App.Services
             {
                 SlackInteractionType.ShortCut => await _shortCutService.ProcessShortCut(interactiveEvent),
                 SlackInteractionType.BlockActions => await _blockActionService.ProcessBlockActions(interactiveEvent),
-                _ => throw new NotImplementedException()
+                _ => throw new NotImplementedException($"{interactiveEvent?.Type} is not supported!")
             };
         
         #endregion

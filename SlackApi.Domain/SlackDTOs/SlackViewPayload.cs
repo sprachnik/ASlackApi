@@ -17,6 +17,10 @@ namespace SlackApi.Domain.SlackDTOs
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? ViewId { get; set; }
 
+        [JsonPropertyName("hash")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Hash { get; set; }
+
         [JsonPropertyName("view")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public SlackViewPayload? View { get; set; }
