@@ -36,6 +36,11 @@
         /// </summary>
         public const string UsersInfoUrl = "https://slack.com/api/users.info";
 
+        /// <summary>
+        /// https://api.slack.com/methods/users.list
+        /// </summary>
+        public const string UsersList = "https://slack.com/api/users.list";
+
         #endregion
     }
 }

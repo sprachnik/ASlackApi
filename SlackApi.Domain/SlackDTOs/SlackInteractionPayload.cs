@@ -12,7 +12,7 @@ namespace SlackApi.Domain.SlackDTOs
         public Team? Team { get; set; }
 
         [JsonPropertyName("user")]
-        public User? User { get; set; }
+        public SlackUserDTO? User { get; set; }
 
         [JsonPropertyName("api_app_id")]
         public string? ApiAppId { get; set; }

@@ -17,12 +17,24 @@ namespace SlackApi.Domain.SlackDTOs
         public SlackViewPayload? View { get; set; }
 
         [JsonPropertyName("user")]
-        public User? User { get; set; }
+        public SlackUserDTO? User { get; set; }
+
+        [JsonPropertyName("cache_ts")]
+        public int? CacheTs { get; set; }
+
+        [JsonPropertyName("members")]
+        public List<SlackUserDTO>? Members { get; set; }
     }
 
     public class ResponseMetadata
     {
         [JsonPropertyName("messages")]
         public List<string>? Messages { get; set; }
+
+        [JsonPropertyName("response_metadata")]
+        public Dictionary<string, string>? Metadata { get; set; }
+
+        public string? NextCursor => Metadata != null && Metadata.ContainsKey("next_cursor") 
+            ? Metadata["next_cursor"] : null;
     }
 }

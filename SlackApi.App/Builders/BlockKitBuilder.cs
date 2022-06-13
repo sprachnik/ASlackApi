@@ -65,7 +65,8 @@ namespace SlackApi.App.Builders
         }
 
         public virtual IBlockKitBuilder AddUsersSelectBlock(string label = "Select a user", 
-            string actionId = "users-select-action")
+            string actionId = "users-select-action",
+            string blockId = "users-select-block")
         {
             _blocks.Add(new Block
             {

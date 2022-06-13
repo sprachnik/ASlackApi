@@ -1,7 +1,31 @@
-﻿using System.Text.Json.Serialization;
+﻿using SlackApi.Domain.BadgeDTOs;
+using System.Text.Json.Serialization;
 
 namespace SlackApi.Domain.SlackDTOs
 {
+    public class SlackUserTableEntity : TableEntityBase
+    {
+        public SlackUserTableEntity()
+        {
+
+        }
+
+        public SlackUserTableEntity(string partitionKey, string rowKey)
+        {
+            PartitionKey = partitionKey;
+            RowKey = rowKey;
+        }
+
+        public string? Id { get; set; }
+        public string? TeamId { get; set; }
+        public string? RealName { get; set; }
+        public string? DisplayName { get; set; }
+        public string? Email { get; set; }
+        public string? Image512 { get; set; }
+        public bool? IsBot { get; set; }
+    }
+
+
     public class Profile
     {
         [JsonPropertyName("avatar_hash")]
@@ -53,13 +77,7 @@ namespace SlackApi.Domain.SlackDTOs
         public string? Team { get; set; }
     }
 
-    public class Root
-    {
-        [JsonPropertyName("user")]
-        public User? User { get; set; }
-    }
-
-    public class User
+    public class SlackUserDTO
     {
         [JsonPropertyName("id")]
         public string? Id { get; set; }

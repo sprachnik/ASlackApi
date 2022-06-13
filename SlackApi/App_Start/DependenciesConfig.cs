@@ -20,6 +20,7 @@ namespace SlackApi.App_Start
             services.AddTransient<ICache, MemCache>();
             services.AddTransient<ITableStorageMemStore, TableStorageMemStore>();
             services.AddTransient<IBlockActionService, BlockActionsService>();
+            services.AddTransient<ISlackUserService, SlackUserService>();
 
             // Scopes
 

@@ -63,9 +63,9 @@ namespace SlackApi.App.Builders
             return this;
         }
 
-        public override ViewBuilder AddUsersSelectBlock(string label, string actionId)
+        public override ViewBuilder AddUsersSelectBlock(string label, string actionId, string blockId)
         {
-            base.AddUsersSelectBlock(label, actionId);
+            base.AddUsersSelectBlock(label, actionId, blockId);
             return this;
         }
 

@@ -34,7 +34,7 @@ namespace SlackApi.App.HttpClients
                 .Handle<Exception>()
                 .WaitAndRetryAsync(
                     3,
-                    retryAttempt => TimeSpan.FromMilliseconds(new Random().Next(50, 1000)),
+                    retryAttempt => TimeSpan.FromMilliseconds(new Random().Next(50, 500)),
                     (exception, timeSpan, retries, context) =>
                     {
                         if (3 != retries)
