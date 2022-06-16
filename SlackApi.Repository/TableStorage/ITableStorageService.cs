@@ -76,6 +76,17 @@ namespace SlackApi.Repository.TableStorage
             Expression<Func<T, bool>> entityQuery, int depth = 0) where T : class, ITableEntity, new();
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="tableName"></param>
+        /// <param name="query"></param>
+        /// <param name="depth"></param>
+        /// <returns></returns>
+        Task<List<T>> GetAllByQuery<T>(string tableName, string query, int depth = 0)
+            where T : class, ITableEntity, new();
+
+        /// <summary>
         /// Deletes a single entity.
         /// </summary>
         /// <param name="tableEntity"></param>

@@ -7,6 +7,7 @@ using System.Web;
 
 namespace SlackApi.Controllers
 {
+
     public class SlackController : ControllerBase
     {
         private readonly ISlackInteractiveEventService _slackInteractiveEventService;

@@ -1,4 +1,4 @@
-﻿using SlackApi.Domain.BadgeDTOs;
+﻿using SlackApi.Domain.TableStorage;
 using System.Text.Json.Serialization;
 
 namespace SlackApi.Domain.SlackDTOs

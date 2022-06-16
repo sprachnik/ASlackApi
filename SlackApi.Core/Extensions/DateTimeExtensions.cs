@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SlackApi.Core.Extensions
+﻿namespace SlackApi.Core.Extensions
 {
     public static class DateTimeExtensions
     {
@@ -42,7 +36,7 @@ namespace SlackApi.Core.Extensions
         /// <returns></returns>
         public static DateTime? MillisToDateTimeOrNullIfNotValid(this long? epoch, bool canBeFutureDate = true)
         {
-            if (epoch == default)
+            if (epoch == null)
                 return null;
 
             try
@@ -69,7 +63,7 @@ namespace SlackApi.Core.Extensions
         /// <returns></returns>
         public static DateTime? SecondsToDateTimeOrNullIfNotValid(this long? epoch, bool canBeFutureDate = true)
         {
-            if (epoch == default)
+            if (epoch == null)
                 return null;
 
             try
@@ -92,6 +86,15 @@ namespace SlackApi.Core.Extensions
             return (long)(dateTime - epochStart).TotalMilliseconds;
         }
 
+        public static string GetStartOfWeekEpochMillis(this DateTime now)
+            => now
+                .StartOfWeek(DayOfWeek.Monday)
+                .ToEpochMillis()
+                .ToString("D16");
+
+        public static DateTime GetStartOfWeekDateTime(this DateTime now)
+            => now.StartOfWeek(DayOfWeek.Monday);
+
         public static int ToEpoch(this DateTime dateTime)
         {
             var epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -100,7 +103,7 @@ namespace SlackApi.Core.Extensions
 
         public static DateTime RoundMilliseconds(this DateTime dateTime)
         {
-            return (DateTime)RoundMilliseconds((DateTime?)dateTime);
+            return (DateTime)RoundMilliseconds((DateTime)dateTime);
         }
 
         public static DateTime? RoundMilliseconds(this DateTime? dateTime)
@@ -111,12 +114,12 @@ namespace SlackApi.Core.Extensions
             return new DateTime(d.Year, d.Month, d.Day, d.Hour, d.Minute, d.Second);
         }
 
-        public static string ToSqlDateTimeString(this DateTime dateTime)
+        public static string ToSqlDateTimeString(this DateTime? dateTime)
         {
             var sqlDateTimeFormat = "yyyy-MM-dd HH:mm:ss";
             if (dateTime == null)
                 return DateTime.MinValue.ToString(sqlDateTimeFormat);
-            return dateTime.ToString(sqlDateTimeFormat);
+            return dateTime.Value.ToString(sqlDateTimeFormat);
         }
 
         /// <summary>
@@ -142,7 +145,7 @@ namespace SlackApi.Core.Extensions
 
         public static DateTime? GetValueOrNull(this DateTime? dateTime)
         {
-            if (IsNullOrDefault(dateTime))
+            if (dateTime == null)
                 return null;
 
             return dateTime.Value;
@@ -177,25 +180,25 @@ namespace SlackApi.Core.Extensions
         public static int GetDayOfWeek(this DateTime time)
             => (int)Enum.Parse<BinaryDayOfWeek>(time.DayOfWeek.ToString());
 
-        private static readonly Dictionary<string, string> TimespanToStringConversions = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> _timespanToStringConversions = new()
         {
             { "day(s)", "%d" },
             { "hour(s)", "%h" },
             { "minute(s)", "%m" }
         };
 
-        public static string ToDayPart(this TimeSpan? span)
+        public static string? ToDayPart(this TimeSpan? span)
             => ConvertTimeSpan(span, "%d", "day(s)");
 
-        public static string ToHourPart(this TimeSpan? span)
+        public static string? ToHourPart(this TimeSpan? span)
             => ConvertTimeSpan(span, "%h", "hours(s)");
 
-        public static string ToMinutePart(this TimeSpan? span)
+        public static string? ToMinutePart(this TimeSpan? span)
             => ConvertTimeSpan(span, "%m", "minutes(s)");
 
-        public static string ConvertTimeSpan(TimeSpan? span, string conversion, string descriptor)
+        public static string? ConvertTimeSpan(TimeSpan? span, string conversion, string descriptor)
         {
-            if (!span.HasValue)
+            if (span == null)
                 return null;
 
             var convertedSpan = span.Value.ToString(conversion);
@@ -206,11 +209,11 @@ namespace SlackApi.Core.Extensions
             return $"{convertedSpan} {descriptor}";
         }
 
-        public static string ToReadableString(this TimeSpan? span)
+        public static string? ToReadableString(this TimeSpan? span)
         {
-            string timeString = null;
+            string? timeString = null;
 
-            TimespanToStringConversions.ForEach(t =>
+            _timespanToStringConversions.ForEach(t =>
             {
                 var convertedSpan = ConvertTimeSpan(span, t.Value, t.Key);
 
@@ -222,10 +225,10 @@ namespace SlackApi.Core.Extensions
         }
 
         public static DateTime StartOfTheDay(this DateTime d)
-            => new DateTime(d.Year, d.Month, d.Day, 0, 0, 0);
+            => new(d.Year, d.Month, d.Day, 0, 0, 0);
 
         public static DateTime EndOfTheDay(this DateTime d)
-            => new DateTime(d.Year, d.Month, d.Day, 23, 59, 59);
+            => new(d.Year, d.Month, d.Day, 23, 59, 59);
 
         public static DateTime StartOfWeek(this DateTime dt, DayOfWeek startOfWeek, int weeksAgo = 0)
         {

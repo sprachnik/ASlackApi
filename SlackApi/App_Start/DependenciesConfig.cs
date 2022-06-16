@@ -1,5 +1,6 @@
 ﻿using SlackApi.App.MemStore;
 using SlackApi.App.Services;
+using SlackApi.App.Transactions;
 using SlackApi.Core.Settings;
 using SlackApi.Repository.Cache;
 
@@ -21,6 +22,8 @@ namespace SlackApi.App_Start
             services.AddTransient<ITableStorageMemStore, TableStorageMemStore>();
             services.AddTransient<IBlockActionService, BlockActionsService>();
             services.AddTransient<ISlackUserService, SlackUserService>();
+            services.AddTransient<IUserTransactionService, UserTransactionService>();
+            services.AddTransient<IUserBalanceService, UserBalanceService>();
 
             // Scopes
 
