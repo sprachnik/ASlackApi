@@ -23,13 +23,13 @@ namespace SlackApi.Controllers
         [Authorize(Policy = "ValidateSlackRequest")]
         [HttpPost("interactive-events")]
         [Consumes("application/x-www-form-urlencoded")]
+        [Produces("application/json")]
         public async Task<ActionResult<SlackResponse>> ProcessInteractiveEvent(
            [FromForm] string payload)
         {
             var decodedPayload = HttpUtility.UrlDecode(payload);
             var interactiveEvent = JsonSerializer.Deserialize<SlackInteractionPayload>(decodedPayload);
-            await _slackInteractiveEventService.ProcessInteractiveEvent(interactiveEvent);
-            return new SlackResponse();
+            return await _slackInteractiveEventService.ProcessInteractiveEvent(interactiveEvent);
         }
 
         [Authorize(Policy = "ValidateSlackRequest")]

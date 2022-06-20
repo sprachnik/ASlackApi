@@ -46,12 +46,50 @@ namespace SlackApi.Domain.SlackDTOs
 
         [JsonPropertyName("is_cleared")]
         public bool? IsCleared { get; set; }
+
+        public (Dictionary<string, string>, Dictionary<string, string>) ValidateBlockActions(Dictionary<string, string> blockActionValidationDict)
+        {
+            var blockerrors = new Dictionary<string, string>();
+            var blockValues = new Dictionary<string, string>();
+            var blockActionValues = GetBlockActionValuesFromState();
+
+            foreach (var blockAction in blockActionValidationDict)
+            {
+                var isValid = blockActionValues.TryGetValue(blockAction.Key, out var value);
+
+                if (!isValid || value == null)
+                    blockerrors[blockAction.Key] = blockAction.Value;
+
+                if (value != null)
+                    blockValues[blockAction.Key] = value;
+            }
+
+            return (blockerrors, blockValues);
+        }
+
+        public Dictionary<string, string?> GetBlockActionValuesFromState()
+        {
+            var blockValues = new Dictionary<string, string?>();
+
+            if (View?.State?.Values == null)
+                return blockValues;
+
+            foreach (var (blockId, actions) in View.State.Values)
+            {
+                foreach (var (action, stateValue) in actions)
+                {
+                    blockValues[blockId] = stateValue?.Value ?? stateValue?.SelectedOption?.Value;
+                }
+            }
+
+            return blockValues;
+        }
     }
 
-    public class State
+    public class ViewState
     {
         [JsonPropertyName("values")]
-        public Values? Values { get; set; }
+        public Dictionary<string, Dictionary<string, StateValue>>? Values { get; set; }
     }
 
     public class Values
@@ -133,6 +171,18 @@ namespace SlackApi.Domain.SlackDTOs
 
         [JsonPropertyName("selected_option")]
         public SelectedOption? SelectedOption { get; set; }
+    }
+
+    public class StateValue
+    {
+        [JsonPropertyName("type")]
+        public string? Type { get; set; }
+
+        [JsonPropertyName("selected_option")]
+        public SelectedOption? SelectedOption { get; set; }
+
+        [JsonPropertyName("value")]
+        public string? Value { get; set; }
     }
 
     public class SelectedOption
@@ -226,7 +276,7 @@ namespace SlackApi.Domain.SlackDTOs
         public string? CallbackId { get; set; }
 
         [JsonPropertyName("state")]
-        public State? State { get; set; }
+        public ViewState? State { get; set; }
 
         [JsonPropertyName("hash")]
         public string? Hash { get; set; }

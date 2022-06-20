@@ -7,6 +7,7 @@ using System.Text;
 
 namespace SlackApi.Filters.Handlers
 {
+
     public class ValidateSlackRequestHandler : AuthorizationHandler<ValidateSlackRequestHandlerRequirement>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;

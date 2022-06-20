@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SlackApi.App.Transactions;
 
 namespace SlackApi.Controllers
@@ -15,16 +16,19 @@ namespace SlackApi.Controllers
             _userTransactionService = userTransactionService;
         }
 
+        [Authorize(Policy = "ValidateApiToken")]
         [HttpGet("users/{userId}/balance")]
         public async Task<ActionResult<UserCurrentBalanceRecord>> GetBalance(
            string userId)
             => await _userBalanceService.GetBalance(userId);
 
+        [Authorize(Policy = "ValidateApiToken")]
         [HttpGet("users/{userId}/transactions")]
         public async Task<ActionResult<UserTransactionBalance>> GetTransactions(
            string userId)
             => await _userTransactionService.GetTransactionBalance(userId);
 
+        [Authorize(Policy = "ValidateApiToken")]
         [HttpPost("users/{userId}/transaction/{toUserId}")]
         public async Task<ActionResult<UserTransactionRecord>> ProcessInteractiveEvent(
            string userId,

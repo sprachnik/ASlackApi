@@ -12,16 +12,19 @@ namespace SlackApi.App.Services
         private readonly IBlockActionService _blockActionService;
         private readonly TelemetryClient _telemetryClient;
         private readonly ITableStorageTelemetry _tableStorageTelemetry;
+        private readonly IViewSubmissionService _viewSubmissionService;
 
         public SlackInteractiveEventService(IShortCutService shortCutService,
             IBlockActionService blockActionService,
             TelemetryClient telemetryClient,
-            ITableStorageTelemetry tableStorageTelemetry)
+            ITableStorageTelemetry tableStorageTelemetry,
+            IViewSubmissionService viewSubmissionService)
         {
             _shortCutService = shortCutService;
             _blockActionService = blockActionService;
             _telemetryClient = telemetryClient;
             _tableStorageTelemetry = tableStorageTelemetry;
+            _viewSubmissionService = viewSubmissionService;
         }
 
         public async Task<SlackResponse> ProcessInteractiveEvent(SlackInteractionPayload? interactiveEvent)
@@ -53,6 +56,7 @@ namespace SlackApi.App.Services
             {
                 SlackInteractionType.ShortCut => await _shortCutService.ProcessShortCut(interactiveEvent),
                 SlackInteractionType.BlockActions => await _blockActionService.ProcessBlockActions(interactiveEvent),
+                SlackInteractionType.ViewSubmission => await _viewSubmissionService.ProcessViewSubmission(interactiveEvent),
                 _ => throw new NotImplementedException($"{interactiveEvent?.Type} is not supported!")
             };
         

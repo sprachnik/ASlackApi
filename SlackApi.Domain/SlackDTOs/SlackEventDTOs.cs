@@ -79,5 +79,13 @@ namespace SlackApi.Domain.SlackDTOs
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         [JsonPropertyName("challenge")]
         public string? Challenge { get; set; }
+
+        [JsonPropertyName("response_action")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? ResponseAction { get; set; }
+
+        [JsonPropertyName("errors")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public Dictionary<string, string>? Errors { get; set; }
     }
 }

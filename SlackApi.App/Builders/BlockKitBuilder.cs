@@ -7,6 +7,17 @@ namespace SlackApi.App.Builders
     {
         internal readonly List<Block> _blocks = new();
 
+        public virtual IBlockKitBuilder AddDivider()
+        {
+            _blocks.Add(new Block
+            {
+                BlockId = Guid.NewGuid().ToString(),
+                Type = BlockType.Divider
+            });
+
+            return this;
+        }
+
         public virtual IBlockKitBuilder AddInputBlock(string blockId,
             Element? element = null,
             Label? label = null)
@@ -17,6 +28,7 @@ namespace SlackApi.App.Builders
             _blocks.Add(new Block
             {
                 BlockId = blockId,
+                
                 Type = BlockType.Input,
                 Element = element,
                 Label = label

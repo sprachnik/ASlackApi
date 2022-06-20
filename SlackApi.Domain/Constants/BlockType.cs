@@ -10,5 +10,6 @@
         public const string Actions = "actions";
         public const string Input = "input";
         public const string Image = "image";
+        public const string Divider = "divider";
     }
 }

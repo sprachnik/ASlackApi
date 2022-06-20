@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Server.Kestrel.Core;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.OpenApi.Models;
 using SlackApi.App.MemStore;
 using SlackApi.App_Start;
 using SlackApi.Core.Settings;
@@ -46,6 +48,24 @@ namespace SlackApi
                 .ConfigureHttpClient()
                 .RegisterAuthenticationFilters()
                 .AddAntiforgery(options => options.SuppressXFrameOptionsHeader = true);
+
+            services.ConfigureSwaggerGen(c =>
+            {
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = JwtBearerDefaults.AuthenticationScheme
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
+            });
         }
 
         public void Init(IServiceProvider services)

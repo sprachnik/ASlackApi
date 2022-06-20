@@ -66,6 +66,25 @@ namespace SlackApi.App.Services
             if (payload?.View?.RootViewId == null)
                 throw new ArgumentNullException(nameof(payload));
 
+            var blockActionsToValidate = new Dictionary<string, string>
+            {
+                { BadgeFeedbackBlockId, "Please enter some feedback" },
+                { BadgeSelectBlockId, "Please select a badge" },
+                { UserSelectionBlockId, "Please select a user" }
+            };
+
+            var (blockErrors, blockActionValues) = payload.ValidateBlockActions(blockActionsToValidate);
+
+            if (blockErrors != null && blockErrors.Any())
+            {
+                return new()
+                {
+                    ResponseAction = "errors",
+                    Errors = blockErrors
+                };
+            }
+
+
             return new();
         }
 
@@ -149,7 +168,7 @@ namespace SlackApi.App.Services
                     new Text
                     {
                         Type = TextType.Markdown,
-                        BlockText = "*Select a funky badge for a colleague!*"
+                        BlockText = "Let your coworker know how much you appreciate them by sending them a badge with some positive feedback :star2:"
                     });
 
             var nonBotUsers = request.Users
@@ -159,18 +178,16 @@ namespace SlackApi.App.Services
                     && u.Id != request.CurrentUserId)?.ToList();
 
             if (nonBotUsers == null || nonBotUsers.IsNullOrEmpty())
-                viewBuilder = viewBuilder.AddUsersSelectBlock("Select a user", UserSelectionActionId, UserSelectionBlockId);
+                viewBuilder = viewBuilder.AddUsersSelectBlock("Pick your coworker :point_right:", UserSelectionActionId, UserSelectionBlockId);
             else
-                viewBuilder = viewBuilder.AddAccessoryBlock(BlockType.Section,
-                    UserSelectionBlockId,
-                    new Text { Type = TextType.Markdown, BlockText = "Select a user" },
-                    new Accessory
+                viewBuilder = viewBuilder.AddInputBlock(UserSelectionBlockId,
+                    new Element
                     {
                         Type = AccessoryType.StaticSelect,
                         Placeholder = new Placeholder
                         {
                             Type = TextType.PlainText,
-                            Text = "Select a user",
+                            Text = "Coworkers...",
                             Emoji = true
                         },
                         Options = nonBotUsers.Select(user => new Option
@@ -178,20 +195,23 @@ namespace SlackApi.App.Services
                             Text = new Text
                             {
                                 Type = TextType.PlainText,
-                                BlockText = user.RealName ?? user.DisplayName,
-                                Emoji = true
+                                BlockText = user.RealName ?? user.DisplayName
                             },
                             Value = user.Id
                         }).ToList(),
                         ActionId = UserSelectionActionId
-                    });
+                    },
+                    new Label { Type = TextType.PlainText, Text = "Pick your coworker :point_down:" });
 
-            return (SlackViewRequest)viewBuilder.AddAccessoryBlock(BlockType.Section,
+            return (SlackViewRequest)viewBuilder
+                .AddDivider()
+                .AddAccessoryBlock(BlockType.Section,
                     blockId: BadgeSelectBlockId,
                     new Text
                     {
-                        Type = TextType.Markdown,
-                        BlockText = "**Select a badge!**"
+                        Type = TextType.PlainText,
+                        BlockText = "Select an badge :trophy:",
+                        Emoji = true
                     },
                     new Accessory
                     {
@@ -200,7 +220,7 @@ namespace SlackApi.App.Services
                         Placeholder = new Placeholder
                         {
                             Type = TextType.PlainText,
-                            Text = "Select an item"
+                            Text = "Badges..."
                         },
                         Options = (await GetAllBadges()).Select(b =>
                             new Option
@@ -213,6 +233,7 @@ namespace SlackApi.App.Services
                                 Value = b.PartitionKey
                             }).ToList()
                     })
+                .AddDivider()
                 .AddImageBlock(blockId: BadgeImageBlockId,
                     imageUrl: request.BadgeImageUrl ?? _placeHolderImageShrugUrl,
                     altText: request.BadgeText ?? "Select a badge...",

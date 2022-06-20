@@ -37,6 +37,12 @@ namespace SlackApi.App.Builders
             return this;
         }
 
+        public override ViewBuilder AddDivider()
+        {
+            base.AddDivider();
+            return this;
+        }
+
         public override ViewBuilder AddInputBlock(string blockId,
             Element? element = null,
             Label? label = null)
