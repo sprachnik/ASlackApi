@@ -47,43 +47,40 @@ namespace SlackApi.Domain.SlackDTOs
         [JsonPropertyName("is_cleared")]
         public bool? IsCleared { get; set; }
 
-        public (Dictionary<string, string>, Dictionary<string, string>) ValidateBlockActions(Dictionary<string, string> blockActionValidationDict)
+
+        public List<BlockActionValue> GetBlockActionValues(List<BlockStateValueValidator> validators)
         {
-            var blockerrors = new Dictionary<string, string>();
-            var blockValues = new Dictionary<string, string>();
-            var blockActionValues = GetBlockActionValuesFromState();
-
-            foreach (var blockAction in blockActionValidationDict)
-            {
-                var isValid = blockActionValues.TryGetValue(blockAction.Key, out var value);
-
-                if (!isValid || value == null)
-                    blockerrors[blockAction.Key] = blockAction.Value;
-
-                if (value != null)
-                    blockValues[blockAction.Key] = value;
-            }
-
-            return (blockerrors, blockValues);
-        }
-
-        public Dictionary<string, string?> GetBlockActionValuesFromState()
-        {
-            var blockValues = new Dictionary<string, string?>();
+            var blockActionValues = new List<BlockActionValue>();
 
             if (View?.State?.Values == null)
-                return blockValues;
+                return blockActionValues;
 
-            foreach (var (blockId, actions) in View.State.Values)
+            foreach (var validator in validators)
             {
-                foreach (var (action, stateValue) in actions)
+                string? value = null;
+
+                var (blockId, actions) = View.State.Values.FirstOrDefault(s => s.Key == validator.BlockId);
+
+                if (actions != null)
                 {
-                    blockValues[blockId] = stateValue?.Value ?? stateValue?.SelectedOption?.Value;
+                    value = actions
+                        .Select(a => (a.Value?.Value) 
+                            ?? (a.Value?.SelectedOption?.Value != null ? a.Value?.SelectedOption?.Value : null))
+                        .FirstOrDefault();
                 }
+
+                blockActionValues.Add(new(validator.BlockId, validator.BlockType, value, validator.IsValid(value), validator.ValidationMessage));
             }
 
-            return blockValues;
+            return blockActionValues;
         }
+    }
+
+    public record BlockActionValue(string BlockId, string BlockType, string? Value, bool IsValid, string ValidationMessage);
+
+    public record BlockStateValueValidator(string BlockId, Func<string?,bool> Validator, string ValidationMessage, string BlockType)
+    {
+        public bool IsValid(string? stateValue) => Validator(stateValue);
     }
 
     public class ViewState

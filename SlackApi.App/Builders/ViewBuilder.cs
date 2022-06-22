@@ -1,4 +1,5 @@
-﻿using SlackApi.Domain.SlackDTOs;
+﻿using SlackApi.Core.Extensions;
+using SlackApi.Domain.SlackDTOs;
 
 namespace SlackApi.App.Builders
 {
@@ -48,6 +49,12 @@ namespace SlackApi.App.Builders
             Label? label = null)
         {
             base.AddInputBlock(blockId, element, label);
+            return this;
+        }
+
+        public ViewBuilder AddSingleContextBlock(IElement element)
+        {
+            base.AddContextBlocks(element.Yield().ToList());
             return this;
         }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SlackApi.App.JsonConverters;
 using SlackApi.App.Services;
 using SlackApi.Domain.SlackDTOs;
 using System.Text.Json;
@@ -12,6 +13,14 @@ namespace SlackApi.Controllers
     {
         private readonly ISlackInteractiveEventService _slackInteractiveEventService;
         private readonly ILogger<SlackController> _logger;
+        private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        {
+            Converters = 
+            { 
+                new BlockConverter(),
+                new ElementConverter()
+            }
+        };
 
         public SlackController(ISlackInteractiveEventService slackInteractiveEventService,
             ILogger<SlackController> logger)
@@ -28,7 +37,8 @@ namespace SlackApi.Controllers
            [FromForm] string payload)
         {
             var decodedPayload = HttpUtility.UrlDecode(payload);
-            var interactiveEvent = JsonSerializer.Deserialize<SlackInteractionPayload>(decodedPayload);
+            _logger.LogInformation(decodedPayload);
+            var interactiveEvent = JsonSerializer.Deserialize<SlackInteractionPayload>(decodedPayload, _jsonOptions);
             return await _slackInteractiveEventService.ProcessInteractiveEvent(interactiveEvent);
         }
 

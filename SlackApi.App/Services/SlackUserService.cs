@@ -56,16 +56,17 @@ namespace SlackApi.App.Services
                         || slackApiResponse.Members.IsNullOrEmpty())
                         throw new Exception($"Unable to retrieve users for team {requestDTO.TeamId}!");
 
-                    workspaceUsers.AddRange(slackApiResponse.Members.Select(m => new SlackUserTableEntity
-                    {
-                        TeamId = m.TeamId,
-                        Id = m.Id,
-                        RealName = m.RealName,
-                        DisplayName = m.Profile?.DisplayName,
-                        Email = m.Profile?.Email,
-                        Image512 = m.Profile?.Image512,
-                        IsBot = m.IsBot
-                    }));
+                    workspaceUsers.AddRange(slackApiResponse
+                        .Members
+                        .Where(m => m.TeamId != null && m.Id != null)
+                        .Select(m => new SlackUserTableEntity($"{m.TeamId}", $"{m.Id}")
+                        {
+                            RealName = m.RealName,
+                            DisplayName = m.Profile?.DisplayName,
+                            Email = m.Profile?.Email,
+                            Image512 = m.Profile?.Image512,
+                            IsBot = m.IsBot
+                        }));
 
                 } while (slackApiResponse?.ResponseMetadata?.NextCursor != null);
             }

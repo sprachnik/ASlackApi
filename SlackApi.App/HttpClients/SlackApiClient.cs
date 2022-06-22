@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
+using SlackApi.App.JsonConverters;
 using SlackApi.Core.Settings;
 using SlackApi.Domain.SlackDTOs;
 using System.Net.Http.Headers;
@@ -17,6 +18,14 @@ namespace SlackApi.App.HttpClients
         private readonly ILogger<SlackApiClient> _logger;
         private readonly AsyncRetryPolicy _policy;
         private readonly string _outgoingOAuthToken;
+        private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        {
+            Converters =
+            {
+                new BlockConverter(),
+                new ElementConverter()
+            }
+        };
 
         public SlackApiClient(HttpClient client,
             ApplicationSettings applicationSettings,
@@ -78,7 +87,7 @@ namespace SlackApi.App.HttpClients
             if (string.IsNullOrWhiteSpace(content))
                 throw new Exception($"{uri} failed to yield a valid response!");
 
-            var slackApiResponse = JsonSerializer.Deserialize<SlackApiResponse?>(content);
+            var slackApiResponse = JsonSerializer.Deserialize<SlackApiResponse?>(content, _jsonOptions);
 
             if (slackApiResponse?.Ok == false)
                 _logger.LogError($"SlackPostRequest error(s) returned from Slack: {slackApiResponse.Error}", slackApiResponse);
@@ -91,7 +100,7 @@ namespace SlackApi.App.HttpClients
             if (string.IsNullOrEmpty(uri))
                 throw new Exception("uri cannot be null!");
 
-            var messageString = JsonSerializer.Serialize(payload);
+            var messageString = JsonSerializer.Serialize(payload, _jsonOptions);
             using var stringContent = new StringContent(messageString, Encoding.UTF8, "application/json");
 
             var request = new HttpRequestMessage
@@ -119,7 +128,7 @@ namespace SlackApi.App.HttpClients
             if (string.IsNullOrWhiteSpace(content))
                 throw new Exception($"{uri} failed to yield a valid response!");
 
-            var slackApiResponse = JsonSerializer.Deserialize<SlackApiResponse?>(content);
+            var slackApiResponse = JsonSerializer.Deserialize<SlackApiResponse?>(content, _jsonOptions);
 
             if (slackApiResponse?.Ok == false)
                 _logger.LogError($"SlackPostRequest error(s) returned from Slack: {slackApiResponse.Error}", slackApiResponse);

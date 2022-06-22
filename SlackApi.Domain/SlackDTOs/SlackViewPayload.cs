@@ -40,7 +40,7 @@ namespace SlackApi.Domain.SlackDTOs
 
         [JsonPropertyName("blocks")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<Block>? Blocks { get; set; }
+        public List<IBlock>? Blocks { get; set; }
 
         [JsonPropertyName("close")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

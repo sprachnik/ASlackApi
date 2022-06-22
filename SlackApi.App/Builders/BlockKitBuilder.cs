@@ -5,7 +5,7 @@ namespace SlackApi.App.Builders
 {
     public abstract class BlockKitBuilder : IBlockKitBuilder
     {
-        internal readonly List<Block> _blocks = new();
+        internal readonly List<IBlock> _blocks = new();
 
         public virtual IBlockKitBuilder AddDivider()
         {
@@ -32,6 +32,20 @@ namespace SlackApi.App.Builders
                 Type = BlockType.Input,
                 Element = element,
                 Label = label
+            });
+
+            return this;
+        }
+
+        public virtual IBlockKitBuilder AddContextBlocks(List<IElement> elements)
+        {
+            if (elements?.Any() == false)
+                throw new ArgumentException(nameof(elements));
+
+            _blocks.Add(new ContextBlock
+            {
+                Type = BlockType.Context,
+                TextElements = elements
             });
 
             return this;

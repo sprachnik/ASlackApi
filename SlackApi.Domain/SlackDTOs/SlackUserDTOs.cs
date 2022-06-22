@@ -10,10 +10,12 @@ namespace SlackApi.Domain.SlackDTOs
 
         }
 
-        public SlackUserTableEntity(string partitionKey, string rowKey)
+        public SlackUserTableEntity(string teamId, string id)
         {
-            PartitionKey = partitionKey;
-            RowKey = rowKey;
+            TeamId = teamId;
+            Id = id;
+            PartitionKey = teamId;
+            RowKey = id;
         }
 
         public string? Id { get; set; }

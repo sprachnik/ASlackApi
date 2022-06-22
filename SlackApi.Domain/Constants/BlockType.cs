@@ -11,5 +11,6 @@
         public const string Input = "input";
         public const string Image = "image";
         public const string Divider = "divider";
+        public const string Context = "context";
     }
 }

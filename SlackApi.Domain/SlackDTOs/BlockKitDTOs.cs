@@ -2,7 +2,27 @@
 
 namespace SlackApi.Domain.SlackDTOs
 {
-    public class Block
+    public interface IElement
+    {
+
+    }
+
+    public interface IBlock
+    {
+
+    }
+
+    public class ContextBlock : IBlock
+    {
+        [JsonPropertyName("type")]
+        public string? Type { get; set; }
+
+        [JsonPropertyName("elements")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<IElement>? TextElements { get; set; }
+    }
+
+    public class Block : IBlock
     {
         [JsonPropertyName("type")]
         public string? Type { get; set; }
@@ -24,7 +44,7 @@ namespace SlackApi.Domain.SlackDTOs
 
         [JsonPropertyName("elements")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<Element>? Elements { get; set; }
+        public List<IElement>? Elements { get; set; }
 
         [JsonPropertyName("fields")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -36,7 +56,7 @@ namespace SlackApi.Domain.SlackDTOs
 
         [JsonPropertyName("element")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public Element? Element { get; set; }
+        public IElement? Element { get; set; }
 
         [JsonPropertyName("optional")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -70,7 +90,7 @@ namespace SlackApi.Domain.SlackDTOs
         public bool? Emoji { get; set; }
     }
 
-    public class Element
+    public class Element : IElement
     {
         [JsonPropertyName("type")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -95,6 +115,17 @@ namespace SlackApi.Domain.SlackDTOs
         [JsonPropertyName("options")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<Option>? Options { get; set; }
+    }
+
+    public class TextElement : IElement
+    {
+        [JsonPropertyName("type")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Type { get; set; }
+
+        [JsonPropertyName("text")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Text { get; set; }
     }
 
     public class Option

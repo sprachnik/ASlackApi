@@ -44,7 +44,7 @@ namespace SlackApi.App.Services
             var users = await _slackUserService.GetWorkspaceUsers(new PagedSlackRequestDTO
             {
                 TeamId = payload?.Team?.Id,
-                IsSavingOnFetch = false
+                IsSavingOnFetch = true
             });
 
             var request = await GenerateSendABadgeView(new GenerateViewRequestDTO
@@ -66,24 +66,62 @@ namespace SlackApi.App.Services
             if (payload?.View?.RootViewId == null)
                 throw new ArgumentNullException(nameof(payload));
 
-            var blockActionsToValidate = new Dictionary<string, string>
+            var blockActionsToValidate = new List<BlockStateValueValidator>
             {
-                { BadgeFeedbackBlockId, "Please enter some feedback" },
-                { BadgeSelectBlockId, "Please select a badge" },
-                { UserSelectionBlockId, "Please select a user" }
+                new (BadgeFeedbackBlockId, v => !string.IsNullOrEmpty(v), "Please enter some feedback", BlockType.Input),
+                new (BadgeSelectBlockId, v => !string.IsNullOrEmpty(v), ":exclamation: *Please select a badge*", BlockType.Section),
+                new (UserSelectionBlockId, v => !string.IsNullOrEmpty(v), "Please select a user", BlockType.Input)
             };
 
-            var (blockErrors, blockActionValues) = payload.ValidateBlockActions(blockActionsToValidate);
+            var blockActionValues = payload.GetBlockActionValues(blockActionsToValidate);
 
-            if (blockErrors != null && blockErrors.Any())
+            // Only block inputs can be returned with errors
+            if (blockActionValues != null && blockActionValues.Any(a => !a.IsValid && a.BlockType == BlockType.Input))
             {
                 return new()
                 {
                     ResponseAction = "errors",
-                    Errors = blockErrors
+                    Errors = blockActionValues
+                        .Where(b => !b.IsValid && b.BlockType == BlockType.Input)
+                        .Select(g => new KeyValuePair<string, string>(g.BlockId, g.ValidationMessage))
+                        .ToDictionary(g => g.Key, g => g.Value)
                 };
             }
 
+            if (blockActionValues != null && blockActionValues.Any(a => !a.IsValid && a.BlockId == BadgeSelectBlockId))
+            {
+                var request = await GenerateSendABadgeView(new GenerateViewRequestDTO
+                {
+                    CallbackId = null,
+                    TriggerId = null,
+                    BadgeImageUrl = null,
+                    BadgeText = null,
+                    CurrentUserId = payload?.User?.Id,
+                    BadgeSelectionActionValue = blockActionValues.FirstOrDefault(b => b.BlockId == BadgeSelectBlockId),
+                    Users = await _slackUserService.GetWorkspaceUsers(new PagedSlackRequestDTO
+                    {
+                        TeamId = payload?.Team?.Id,
+                        IsSavingOnFetch = false
+                    })
+                });
+
+                if (request?.View == null)
+                    throw new ArgumentNullException(nameof(request));
+
+                request.ViewId = payload?.View?.RootViewId;
+                request.Hash = payload?.View?.Hash;
+
+                await _slackApiClient.SlackPostRequest(SlackEndpoints.ViewsUpdateUrl, request);
+
+                return new()
+                {
+                    ResponseAction = "errors",
+                    Errors = blockActionValues
+                        .Where(b => !b.IsValid && b.BlockId == BadgeSelectBlockId)
+                        .Select(g => new KeyValuePair<string, string>(g.BlockId, g.ValidationMessage))
+                        .ToDictionary(g => g.Key, g => g.Value)
+                };
+            }
 
             return new();
         }
@@ -203,7 +241,7 @@ namespace SlackApi.App.Services
                     },
                     new Label { Type = TextType.PlainText, Text = "Pick your coworker :point_down:" });
 
-            return (SlackViewRequest)viewBuilder
+            viewBuilder = viewBuilder
                 .AddDivider()
                 .AddAccessoryBlock(BlockType.Section,
                     blockId: BadgeSelectBlockId,
@@ -232,7 +270,18 @@ namespace SlackApi.App.Services
                                 },
                                 Value = b.PartitionKey
                             }).ToList()
-                    })
+                    });
+
+            if (request.BadgeSelectionActionValue != null)
+            {
+                viewBuilder = viewBuilder.AddSingleContextBlock(new TextElement
+                {
+                    Type = ElementType.Markdown,
+                    Text = request.BadgeSelectionActionValue.ValidationMessage
+                });
+            }
+
+            return (SlackViewRequest)viewBuilder
                 .AddDivider()
                 .AddImageBlock(blockId: BadgeImageBlockId,
                     imageUrl: request.BadgeImageUrl ?? _placeHolderImageShrugUrl,
@@ -286,6 +335,7 @@ namespace SlackApi.App.Services
             public string? BadgeText { get; set; }
             public List<SlackUserTableEntity>? Users { get; set; }
             public string? CurrentUserId { get; set; }
+            public BlockActionValue? BadgeSelectionActionValue { get; set; }
         }
     }
 

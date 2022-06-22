@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.OpenApi.Models;
+using SlackApi.App.JsonConverters;
 using SlackApi.App.MemStore;
 using SlackApi.App_Start;
 using SlackApi.Core.Settings;
@@ -33,6 +34,7 @@ namespace SlackApi
                 {
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.Converters.Add(new BlockConverter());
                 });
 
             services

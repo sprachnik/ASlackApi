@@ -168,7 +168,7 @@ namespace SlackApi.Repository.TableStorage
             try
             {
                 List<TableTransactionAction> addEntitiesBatch = new();
-                addEntitiesBatch.AddRange(tableEntities.Select(e => new TableTransactionAction(TableTransactionActionType.Add, e)));
+                addEntitiesBatch.AddRange(tableEntities.Select(e => new TableTransactionAction(TableTransactionActionType.UpsertMerge, e)));
                 var response = await table.SubmitTransactionAsync(addEntitiesBatch).ConfigureAwait(false);
 
                 return tableEntities;
