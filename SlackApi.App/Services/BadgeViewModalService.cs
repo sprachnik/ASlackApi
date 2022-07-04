@@ -5,12 +5,14 @@ using SlackApi.Core.Exceptions;
 using SlackApi.Core.Extensions;
 using SlackApi.Domain.BadgeDTOs;
 using SlackApi.Domain.Constants;
+using SlackApi.Domain.DTOs;
 using SlackApi.Domain.SlackDTOs;
 using SlackApi.Repository.Cache;
 using SlackApi.Repository.TableStorage;
 
 namespace SlackApi.App.Services
 {
+
     /// <summary>
     /// https://api.slack.com/surfaces/modals/using#updating_response
     /// </summary>
@@ -21,19 +23,23 @@ namespace SlackApi.App.Services
         private readonly ITableStorageMemStore _tableStorageMemStore;
         private readonly ICache _cache;
         private readonly ISlackUserService _slackUserService;
-        private readonly string _placeHolderImageShrugUrl = "https://i.imgur.com/Zam8zGt.jpg";
+        private readonly IUserNotificationService _userNotificationService;
+        private readonly string _placeHolderBadgeImageUrl = "https://i.imgur.com/Zam8zGt.jpg";
 
         public BadgeViewModalService(SlackApiClient slackApiClient,
             ITableStorageService tableStorageService,
             ITableStorageMemStore tableStorageMemStore,
             ICache cache,
-            ISlackUserService slackUserService)
+            ISlackUserService slackUserService,
+            IUserNotificationService userNotificationService
+            )
         {
             _slackApiClient = slackApiClient;
             _tableStorageService = tableStorageService;
             _tableStorageMemStore = tableStorageMemStore;
             _cache = cache;
             _slackUserService = slackUserService;
+            _userNotificationService = userNotificationService;
         }
 
         public async Task<SlackResponse> OpenSendBadgeView(SlackInteractionPayload payload)
@@ -51,7 +57,7 @@ namespace SlackApi.App.Services
             {
                 CallbackId = payload?.CallbackId,
                 TriggerId = payload?.TriggerId,
-                BadgeImageUrl = _placeHolderImageShrugUrl,
+                BadgeImageUrl = _placeHolderBadgeImageUrl,
                 CurrentUserId = payload?.User?.Id,
                 Users = users
             });
@@ -123,7 +129,94 @@ namespace SlackApi.App.Services
                 };
             }
 
+            await SaveBadge(blockActionValues, payload);
+
             return new();
+        }
+
+        private async Task SaveBadge(List<BlockActionValue>? blockActionValues, SlackInteractionPayload payload)
+        {
+            var badgeName = blockActionValues?.FirstOrDefault(b => b.BlockId == BadgeSelectBlockId)?.Value;
+            var feedback = blockActionValues?.FirstOrDefault(b => b.BlockId == BadgeFeedbackBlockId)?.Value;
+            var userId = blockActionValues?.FirstOrDefault(b => b.BlockId == UserSelectionBlockId)?.Value;
+
+            if (string.IsNullOrWhiteSpace(badgeName)
+                || string.IsNullOrWhiteSpace(feedback)
+                || string.IsNullOrWhiteSpace(userId)
+                || payload?.User == null)
+                throw new ArgumentException("Check block action values and user in payload!");
+
+            var selectedBadge = (await GetAllBadges())?.FirstOrDefault(b => b.Name == badgeName);
+
+            if (selectedBadge == null)
+                throw new ArgumentException($"{badgeName} badge not found!");
+
+            var users = await _slackUserService.GetWorkspaceUsers(new PagedSlackRequestDTO
+            {
+                TeamId = payload?.User?.TeamId,
+                IsSavingOnFetch = false
+            });
+
+            var fromUser = users?.FirstOrDefault(u => u.Id == payload?.User?.Id);
+
+            var userBadge = new UserBadgeTableEntity(payload?.User?.TeamId,
+                userId,
+                payload?.User?.Id)
+            {
+                BadgeImageUrl = selectedBadge.ImageUrl,
+                BadgeName = selectedBadge.Name,
+                FromUserRealName = fromUser?.RealName is not null 
+                    ? fromUser?.RealName 
+                    : fromUser?.DisplayName is not null 
+                    ? fromUser?.DisplayName : "User",
+                Feedback = feedback
+            };
+
+            await _tableStorageService.UpsertAsync(userBadge, UserBadgeTableEntity.TableName);
+
+            await SaveUserNotifications(userBadge, users);
+        }
+
+        private async Task SaveUserNotifications(UserBadgeTableEntity? badge, List<SlackUserTableEntity>? users)
+        {
+            if (badge == null || users == null)
+                throw new ArgumentException("Invalid arguments provided");
+
+            var fromUser = users.FirstOrDefault(u => u.Id == badge.FromUserId);
+            var toUser = users.FirstOrDefault(u => u.Id == badge.UserId);
+
+            if (fromUser == null || toUser == null)
+                throw new BusinessException("from or to user not found!");
+
+            var badgeSentNotification = new UserNotificationTableEntity(badge.TeamId, fromUser?.Id,
+                UserNotificationType.BadgeSent)
+            {
+                FromUserId = fromUser?.Id,
+                FromUserRealName= fromUser?.RealName ?? fromUser?.DisplayName,
+                ToUserId = toUser?.Id,
+                ToUserRealName = toUser?.RealName ?? toUser?.DisplayName,
+                Title = "Sent a badge",
+                Body = badge.Feedback,
+                ImageUrl = badge.BadgeImageUrl,
+                Amount = 0
+            };
+
+            await _userNotificationService.InsertUserNotification(badgeSentNotification);
+
+            var badgeReceivedNotification = new UserNotificationTableEntity(badge.TeamId, toUser?.Id,
+                UserNotificationType.BadgeRecieved)
+            {
+                FromUserId = fromUser?.Id,
+                FromUserRealName = fromUser?.RealName ?? fromUser?.DisplayName,
+                ToUserId = toUser?.Id,
+                ToUserRealName = toUser?.RealName ?? toUser?.DisplayName,
+                Title = "Sent a badge",
+                Body = badge.Feedback,
+                ImageUrl = badge.BadgeImageUrl,
+                Amount = 0
+            };
+
+            await _userNotificationService.InsertUserNotification(badgeReceivedNotification);
         }
 
         public async Task<SlackResponse> SelectUserAction(SlackInteractionPayload payload)
@@ -284,7 +377,7 @@ namespace SlackApi.App.Services
             return (SlackViewRequest)viewBuilder
                 .AddDivider()
                 .AddImageBlock(blockId: BadgeImageBlockId,
-                    imageUrl: request.BadgeImageUrl ?? _placeHolderImageShrugUrl,
+                    imageUrl: request.BadgeImageUrl ?? _placeHolderBadgeImageUrl,
                     altText: request.BadgeText ?? "Select a badge...",
                     new Title
                     {

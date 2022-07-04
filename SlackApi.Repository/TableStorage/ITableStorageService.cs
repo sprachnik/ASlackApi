@@ -97,6 +97,10 @@ namespace SlackApi.Repository.TableStorage
            string tableName, bool isExceptionCheck = true, int depth = 0) where T : class, ITableEntity, new();
 
         Task<List<Azure.Response>> DeleteByPartitionKey(string tableName, string partitionKey);
+
+        Task<PagedTableStorageResponse<T>> GetPagedCollectionAsync<T>(string tableName,
+            string partitionKey,
+            PagedTableStorageRequest request) where T : class, ITableEntity, new();
     }
 
     public interface ITableStorageTelemetry : ITableStorageService { };

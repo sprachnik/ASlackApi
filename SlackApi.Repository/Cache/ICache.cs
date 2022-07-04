@@ -7,6 +7,7 @@
         Task<T?> GetAsync<T>(string key);
         Task<List<T>?> GetCollectionAsync<T>(string key);
         Task RemoveAsync(string key);
-        Task<T?> GetAndOrSetAsync<T>(string key, Func<Task<T>> func, TimeSpan? ttl = null);
+        Task<T?> GetAndOrSetAsync<T>(string key,
+            Func<Task<T>> func, TimeSpan? ttl = null, bool isForce = false);
     }
 }

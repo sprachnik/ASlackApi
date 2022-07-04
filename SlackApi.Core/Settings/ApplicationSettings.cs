@@ -16,6 +16,6 @@
         public string? OutgoingOAuthToken { get; set; }
         public string? IncomingToken { get; set; }
         public string? SigningSecret { get; set; }
-        public string DefaultVersionNo { get; set; } = "v0";
+        public string? DefaultVersionNo { get; set; } = "v0";
     }
 }

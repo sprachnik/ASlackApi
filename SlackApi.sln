@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlackApi.App", "SlackApi.Ap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlackApi.Domain", "SlackApi.Domain\SlackApi.Domain.csproj", "{28D8CEBC-AC20-4DB5-94A4-0A1FC6828C95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlackApi.Repository", "SlackApi.Repository\SlackApi.Repository.csproj", "{A3D359D2-D3B7-4A72-A13F-8843769AC546}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlackApi.Repository", "SlackApi.Repository\SlackApi.Repository.csproj", "{A3D359D2-D3B7-4A72-A13F-8843769AC546}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlackApi.Core", "SlackApi.Core\SlackApi.Core.csproj", "{BD6AB107-36D6-4BA2-89DF-B45EE3B98729}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlackApi.Core", "SlackApi.Core\SlackApi.Core.csproj", "{BD6AB107-36D6-4BA2-89DF-B45EE3B98729}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlackApi.Functions", "SlackApi.Functions\SlackApi.Functions.csproj", "{1E1E8D61-729A-45FA-ABEB-68B89F1C581C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{BD6AB107-36D6-4BA2-89DF-B45EE3B98729}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD6AB107-36D6-4BA2-89DF-B45EE3B98729}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD6AB107-36D6-4BA2-89DF-B45EE3B98729}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E1E8D61-729A-45FA-ABEB-68B89F1C581C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E1E8D61-729A-45FA-ABEB-68B89F1C581C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E1E8D61-729A-45FA-ABEB-68B89F1C581C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E1E8D61-729A-45FA-ABEB-68B89F1C581C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

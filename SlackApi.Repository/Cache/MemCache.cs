@@ -43,9 +43,10 @@ namespace SlackApi.Repository.Cache
         public async Task RemoveAsync(string key)
             => await _distributedCache.RemoveAsync(key);
 
-        public async Task<T?> GetAndOrSetAsync<T>(string key, Func<Task<T>> func, TimeSpan? ttl = null)
+        public async Task<T?> GetAndOrSetAsync<T>(string key, 
+            Func<Task<T>> func, TimeSpan? ttl = null, bool isForce = false)
         {
-            var response = await GetAsync<T>(key);
+            var response = isForce ? default : await GetAsync<T>(key);
 
             if (response is not null)
                 return response;

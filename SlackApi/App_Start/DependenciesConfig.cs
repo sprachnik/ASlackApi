@@ -25,6 +25,7 @@ namespace SlackApi.App_Start
             services.AddTransient<IUserTransactionService, UserTransactionService>();
             services.AddTransient<IUserBalanceService, UserBalanceService>();
             services.AddTransient<IViewSubmissionService, ViewSubmissionService>();
+            services.AddTransient<IUserNotificationService, UserNotificationService>();
 
             // Scopes
 
