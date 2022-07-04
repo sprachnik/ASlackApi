@@ -185,6 +185,14 @@ namespace SlackApi.Domain.SlackDTOs
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Value { get; set; }
 
+        [JsonPropertyName("image_url")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? ImageUrl { get; set; }
+
+        [JsonPropertyName("alt_text")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? AltText { get; set; }
+
         [JsonPropertyName("style")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Style { get; set; }

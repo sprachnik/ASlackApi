@@ -26,6 +26,7 @@ namespace SlackApi.App_Start
             services.AddTransient<IUserBalanceService, UserBalanceService>();
             services.AddTransient<IViewSubmissionService, ViewSubmissionService>();
             services.AddTransient<IUserNotificationService, UserNotificationService>();
+            services.AddTransient<ISlackHomeTabService, SlackHomeTabService>();
 
             // Scopes
 

@@ -24,6 +24,7 @@ namespace SlackApi.App.Services
         private readonly ICache _cache;
         private readonly ISlackUserService _slackUserService;
         private readonly IUserNotificationService _userNotificationService;
+        private readonly ISlackHomeTabService _slackHomeTabService;
         private readonly string _placeHolderBadgeImageUrl = "https://i.imgur.com/Zam8zGt.jpg";
 
         public BadgeViewModalService(SlackApiClient slackApiClient,
@@ -31,7 +32,8 @@ namespace SlackApi.App.Services
             ITableStorageMemStore tableStorageMemStore,
             ICache cache,
             ISlackUserService slackUserService,
-            IUserNotificationService userNotificationService
+            IUserNotificationService userNotificationService,
+            ISlackHomeTabService slackHomeTabService
             )
         {
             _slackApiClient = slackApiClient;
@@ -40,6 +42,7 @@ namespace SlackApi.App.Services
             _cache = cache;
             _slackUserService = slackUserService;
             _userNotificationService = userNotificationService;
+            _slackHomeTabService = slackHomeTabService;
         }
 
         public async Task<SlackResponse> OpenSendBadgeView(SlackInteractionPayload payload)
@@ -175,6 +178,9 @@ namespace SlackApi.App.Services
             await _tableStorageService.UpsertAsync(userBadge, UserBadgeTableEntity.TableName);
 
             await SaveUserNotifications(userBadge, users);
+
+            await _slackHomeTabService.Publish(payload?.User?.TeamId, payload?.User?.Id);
+            await _slackHomeTabService.Publish(payload?.User?.TeamId, userId);
         }
 
         private async Task SaveUserNotifications(UserBadgeTableEntity? badge, List<SlackUserTableEntity>? users)

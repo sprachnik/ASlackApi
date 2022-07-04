@@ -7,6 +7,7 @@
     {
         public const string Button = "button";
         public const string PlainTextInput = "plain_text_input";
+        public const string PlainText = "plain_text";
         public const string Markdown = "mrkdwn";
     }
 }

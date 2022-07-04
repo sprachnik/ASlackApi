@@ -3,6 +3,6 @@
     public static class SlackResponsePayloadType
     {
         public const string Modal = "modal";
-        public const string Hoem = "home";
+        public const string Home = "home";
     }
 }
