@@ -37,7 +37,7 @@ namespace SlackApi.App.Telemetry
             _telemetry = new TelemetryTableEntity
             {
                 PartitionKey = key,
-                RowKey = _dateStarted.ToEpochMillis().ToString("D16"),
+                RowKey = _dateStarted.ToReverseTicksMillis().ToString("D16"),
                 EventName = eventName,
                 DateStarted = _dateStarted,
             };

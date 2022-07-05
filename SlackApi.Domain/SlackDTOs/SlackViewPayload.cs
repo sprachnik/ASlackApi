@@ -7,11 +7,33 @@ namespace SlackApi.Domain.SlackDTOs
 
     }
 
+    public class SlackMessageRequest : ISlackRequest
+    {
+        [JsonPropertyName("channel")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Channel { get; set; }
+
+        [JsonPropertyName("blocks")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<Block>? Blocks { get; set; }
+
+        [JsonPropertyName("text")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public Text? Text { get; set; }
+
+        [JsonPropertyName("as_user")]
+        public bool AsUser { get; set; } = true;
+    }
+
     public class SlackViewRequest : ISlackRequest
     {
         [JsonPropertyName("trigger_id")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? TriggerId { get; set; }
+
+        [JsonPropertyName("user_id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? UserId { get; set; }
 
         [JsonPropertyName("view_id")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

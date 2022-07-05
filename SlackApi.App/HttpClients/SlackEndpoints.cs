@@ -5,6 +5,12 @@
     /// </summary>
     public static class SlackEndpoints
     {
+        #region messages
+
+        public const string PostMessageUrl = "https://slack.com/api/chat.postMessage";
+
+        #endregion
+
         #region views
 
         /// <summary>
@@ -15,7 +21,7 @@
         /// <summary>
         /// https://api.slack.com/methods/views.publish
         /// </summary>
-        public const string ViewPublishUrl = "https://api.slack.com/methods/views.publish";
+        public const string ViewPublishUrl = "https://slack.com/api/views.publish";
 
         /// <summary>
         /// https://api.slack.com/methods/views.update

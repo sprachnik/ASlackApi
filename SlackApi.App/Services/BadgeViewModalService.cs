@@ -25,6 +25,7 @@ namespace SlackApi.App.Services
         private readonly ISlackUserService _slackUserService;
         private readonly IUserNotificationService _userNotificationService;
         private readonly ISlackHomeTabService _slackHomeTabService;
+        private readonly ISendMessageService _sendMessageService;
         private readonly string _placeHolderBadgeImageUrl = "https://i.imgur.com/Zam8zGt.jpg";
 
         public BadgeViewModalService(SlackApiClient slackApiClient,
@@ -33,7 +34,8 @@ namespace SlackApi.App.Services
             ICache cache,
             ISlackUserService slackUserService,
             IUserNotificationService userNotificationService,
-            ISlackHomeTabService slackHomeTabService
+            ISlackHomeTabService slackHomeTabService,
+            ISendMessageService sendMessageService
             )
         {
             _slackApiClient = slackApiClient;
@@ -43,6 +45,7 @@ namespace SlackApi.App.Services
             _slackUserService = slackUserService;
             _userNotificationService = userNotificationService;
             _slackHomeTabService = slackHomeTabService;
+            _sendMessageService = sendMessageService;
         }
 
         public async Task<SlackResponse> OpenSendBadgeView(SlackInteractionPayload payload)
@@ -181,6 +184,33 @@ namespace SlackApi.App.Services
 
             await _slackHomeTabService.Publish(payload?.User?.TeamId, payload?.User?.Id);
             await _slackHomeTabService.Publish(payload?.User?.TeamId, userId);
+
+            await SendBadgeRecievedMessage(userBadge);
+        }
+
+        private async Task SendBadgeRecievedMessage(UserBadgeTableEntity userBadge)
+        {
+            var badgeSendMessage = new SlackMessageRequest
+            {
+                Channel = userBadge.UserId,
+                Blocks = new BlockKitBuilder()
+                   .AddAccessoryBlock(AccessoryType.Section, 
+                   Guid.NewGuid().ToString(),
+                   new Text
+                   {
+                       Type = TextType.Markdown,
+                       BlockText = $"*{userBadge.FromUserRealName}* sent you a badge! :star:\n{userBadge.Feedback}"
+                   },
+                   new Accessory
+                   {
+                       Type = AccessoryType.Image,
+                       ImageUrl = userBadge.BadgeImageUrl,
+                       AltText = userBadge.BadgeName
+                   }
+                   ).GetBlocks()
+            };
+
+            await _sendMessageService.PostMessage(badgeSendMessage);
         }
 
         private async Task SaveUserNotifications(UserBadgeTableEntity? badge, List<SlackUserTableEntity>? users)

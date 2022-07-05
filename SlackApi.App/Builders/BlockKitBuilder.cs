@@ -3,7 +3,7 @@ using SlackApi.Domain.SlackDTOs;
 
 namespace SlackApi.App.Builders
 {
-    public abstract class BlockKitBuilder : IBlockKitBuilder
+    public class BlockKitBuilder : IBlockKitBuilder
     {
         internal readonly List<IBlock> _blocks = new();
 
@@ -123,5 +123,7 @@ namespace SlackApi.App.Builders
         {
             throw new NotImplementedException();
         }
+
+        public List<Block> GetBlocks() => _blocks.Select(b => (Block)b).ToList();
     }
 }

@@ -6,5 +6,6 @@ namespace SlackApi.App.Builders
     {
 
         ISlackRequest ConstructRequest();
+        List<Block> GetBlocks();
     }
 }

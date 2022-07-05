@@ -11,7 +11,7 @@ namespace SlackApi.Domain.BadgeDTOs
         }
 
         public UserBadgeTableEntity(string? teamId, string? userId, string? fromUserId) 
-            : base(GeneratePartitionKey(teamId, userId), DateTime.UtcNow.ToEpochMillis().ToString("D16"))
+            : base(GeneratePartitionKey(teamId, userId), DateTime.UtcNow.ToReverseTicksMillis().ToString("D16"))
         {
             if (string.IsNullOrWhiteSpace(teamId) 
                 || string.IsNullOrWhiteSpace(userId)

@@ -7,7 +7,7 @@ namespace SlackApi.App.Transactions
         string Description, DateTime TransactionDate, Dictionary<string, string>? MetaData = null)
     {
         public string TransactionId => Guid.NewGuid().ToString();
-        public string TransactionEpoch => TransactionDate.ToEpochMillis().ToString("D16");
+        public string TransactionEpoch => TransactionDate.ToReverseTicksMillis().ToString("D16");
         public string MetaDataString => JsonSerializer.Serialize(MetaData);
         public bool IsFundsWithdrawn { get; set; } = false;
         public double BalanceAfterWithdrawl { get; set; } = 0;

@@ -39,7 +39,7 @@ namespace SlackApi.App.Transactions
             var newRecord = new UserBalanceTransactionTableEntity(
                 new UserBalanceTransactionRecord(userId, userId, amount,
                     description ?? "Automated Deposit", transactionDate, Guid.NewGuid().ToString(),
-                    transactionDate.ToEpochMillis().ToString("D16")));
+                    transactionDate.ToReverseTicksMillis().ToString("D16")));
 
             await _tableStorageService.UpsertAsync(newRecord, TableStorageTable.UserBalanceTransactions);
             await _cache.RemoveAsync(GetBalanceCacheKey(userId, transactionDate.GetStartOfWeekEpochMillis()));
