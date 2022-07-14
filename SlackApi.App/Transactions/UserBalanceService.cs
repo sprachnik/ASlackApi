@@ -42,7 +42,7 @@ namespace SlackApi.App.Transactions
                     transactionDate.ToReverseTicksMillis().ToString("D16")));
 
             await _tableStorageService.UpsertAsync(newRecord, TableStorageTable.UserBalanceTransactions);
-            await _cache.RemoveAsync(GetBalanceCacheKey(userId, transactionDate.GetStartOfWeekEpochMillis()));
+            await _cache.RemoveAsync(GetBalanceCacheKey(userId, transactionDate.GetStartOfWeekReverseTickEpochMillis()));
 
             return newRecord;
         }
@@ -96,11 +96,11 @@ namespace SlackApi.App.Transactions
 
             var now = DateTime.UtcNow;
             var startOfWeekDate = now.GetStartOfWeekDateTime();
-            var startOfWeek = now.GetStartOfWeekEpochMillis();
+            var startOfWeek = now.GetStartOfWeekReverseTickEpochMillis();
 
             async Task<List<UserBalanceTransactionTableEntity>> GetRecords()
             {
-                var filter = $"PartitionKey eq '{userId}' and RowKey ge '{startOfWeek}'";
+                var filter = $"PartitionKey eq '{userId}' and RowKey le '{startOfWeek}'";
 
                 var records = await _tableStorageService.GetAllByQuery<UserBalanceTransactionTableEntity>(
                     TableStorageTable.UserBalanceTransactions, filter);

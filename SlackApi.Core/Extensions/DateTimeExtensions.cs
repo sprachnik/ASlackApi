@@ -92,6 +92,12 @@
                 .ToEpochMillis()
                 .ToString("D16");
 
+        public static string GetStartOfWeekReverseTickEpochMillis(this DateTime now)
+            => now
+                .StartOfWeek(DayOfWeek.Monday)
+                .ToReverseTicksMillis()
+                .ToString("D16");
+
         public static DateTime GetStartOfWeekDateTime(this DateTime now)
             => now.StartOfWeek(DayOfWeek.Monday);
 

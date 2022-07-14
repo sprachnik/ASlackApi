@@ -67,7 +67,7 @@ namespace SlackApi.App.Transactions
             var filter = $"PartitionKey eq '{userId}'";
 
             if (!string.IsNullOrEmpty(fromEpochMillis))
-                filter += $" and RowKey ge '{fromEpochMillis}'";
+                filter += $" and RowKey le '{fromEpochMillis}'";
 
             return await _tableStorageService.GetAllByQuery<UserTransactionTableEntity>(
                 TableStorageTable.UserTransactions, filter);
